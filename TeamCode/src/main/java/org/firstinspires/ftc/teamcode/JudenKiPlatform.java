@@ -64,7 +64,7 @@ public class JudenKiPlatform {
         beaconServo = ahwMap.servo.get("Beacon servo");
         beaconServo.scaleRange(0, 1);
         beaconServo.setDirection(Servo.Direction.FORWARD);
-        beaconServo.setPosition(.5);
+        beaconServo.setPosition(.35);
 
         //Gyro Sensor
         gyro = ahwMap.gyroSensor.get("gyro");

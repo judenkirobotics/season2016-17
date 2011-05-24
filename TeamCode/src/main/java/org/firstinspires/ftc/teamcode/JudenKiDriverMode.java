@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**
@@ -51,6 +52,8 @@ public class JudenKiDriverMode extends LinearOpMode {
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
+        //
+        robot.catapultMotor.setPower(.0);
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
 
@@ -73,13 +76,20 @@ public class JudenKiDriverMode extends LinearOpMode {
             //Actuate Catapult
 
             if (gamepad1.a)
-                robot.catapultMotor.setPower(.5);
+                shootTheBall(robot.catapultMotor, robot.touchCat);
             if (gamepad1.b)
                 robot.catapultMotor.setPower(.0);
-            if (gamepad1.x)
+            if ((gamepad1.right_trigger > 0.1) && (gamepad1.left_trigger < 0.1))
                 robot.ballPickerMotor.setPower(.9);
-            if (gamepad1.y)
+            else
                  robot.ballPickerMotor.setPower(0);
+
+            if ((gamepad1.left_trigger > 0.1) && (gamepad1.right_trigger < 0.1))
+                robot.ballPickerMotor.setPower(-0.9);
+            else
+                robot.ballPickerMotor.setPower(0);
+
+
 
             //Button Pusher Motor
             if (gamepad1.right_bumper) {
@@ -125,5 +135,23 @@ public class JudenKiDriverMode extends LinearOpMode {
         period.reset();
     }
 
+    public void shootTheBall (DcMotor mot, TouchSensor touch)  {
+
+
+        mot.setPower(.90);
+
+        //Wait some time for it to cycle past the touch sensor
+        double currentTime = System.currentTimeMillis();
+        while ((System.currentTimeMillis() - currentTime < 500) && opModeIsActive()) {
+            //Kill some time
+        }
+
+        while ((touch.isPressed() != true) && opModeIsActive()) {
+            //kill some time
+        }
+        mot.setPower(0);
+
+
+    }
 
 }
