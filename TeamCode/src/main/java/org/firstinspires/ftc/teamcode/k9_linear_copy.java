@@ -56,6 +56,11 @@ import org.firstinspires.ftc.robotcontroller.external.samples.HardwareK9bot;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
+/**
+ * Hardware map (last updated: 2016/10/22)
+ *
+ */
+
 @TeleOp(name="K9bot: Telop Tank", group="K9bot")
 public class k9_linear_copy extends LinearOpMode {
 
@@ -63,6 +68,7 @@ public class k9_linear_copy extends LinearOpMode {
     HardwareK9bot   robot           = new HardwareK9bot();              // Use a K9'shardware
     double          armPosition     = robot.ARM_HOME;                   // Servo safe position
     double          clawPosition    = robot.CLAW_HOME;                  // Servo safe position
+    double          continuous      = 0.00;
     final double    CLAW_SPEED      = 0.01 ;                            // sets rate to move servo
     final double    ARM_SPEED       = 0.01 ;                            // sets rate to move servo
 
@@ -92,6 +98,7 @@ public class k9_linear_copy extends LinearOpMode {
             robot.leftMotor.setPower(left);
             robot.rightMotor.setPower(right);
 
+
             // Use gamepad Y & A raise and lower the arm
             if (gamepad1.a)
                 armPosition += ARM_SPEED;
@@ -104,17 +111,50 @@ public class k9_linear_copy extends LinearOpMode {
             else if (gamepad1.b)
                 clawPosition -= CLAW_SPEED;
 
+            //Use A & B on Gamepad 2 to move continuous
+            if (gamepad2.a)
+                continuous ++;
+            else if (gamepad2.b)
+                continuous --;
+
+            if (continuous > 256)
+                continuous = 256;
+            if (continuous < 0)
+                continuous = 0;
+
+            robot.continuous.setPower(continuous);
+
             // Move both servos to new position.
             armPosition  = Range.clip(armPosition, robot.ARM_MIN_RANGE, robot.ARM_MAX_RANGE);
             robot.arm.setPosition(armPosition);
             clawPosition = Range.clip(clawPosition, robot.CLAW_MIN_RANGE, robot.CLAW_MAX_RANGE);
             robot.claw.setPosition(clawPosition);
 
+            //Test code for touch Sensor, have it spin sail (CRServo) servo
+            //if (robot.touch.isPressed())
+            //    robot.continuous.setPower(0);
+            //else
+            //    robot.continuous.setPower(1);
+
             // Send telemetry message to signify robot running;
             telemetry.addData("arm",   "%.2f", armPosition);
             telemetry.addData("claw",  "%.2f", clawPosition);
+            telemetry.addData("cont",  "%.2f", continuous);
             telemetry.addData("left",  "%.2f", left);
             telemetry.addData("right", "%.2f", right);
+            telemetry.addData("arm port   ",  "%d", robot.arm.getPortNumber());
+            telemetry.addData("claw port  ",  "%d", robot.claw.getPortNumber());
+            telemetry.addData("cont port  ", "%d", robot.continuous.getPortNumber());
+            telemetry.addData("touch sensor  ", "%b", robot.touch.isPressed());
+            telemetry.addData("seeker angle ", "%.4f", robot.seeker.getAngle());
+            telemetry.addData("seeker distance ", "%.4f", robot.seeker.getStrength());
+
+            telemetry.addData("Color Red   ", "%d", robot.color.red());
+            telemetry.addData("Color Green ", "%d", robot.color.green());
+            telemetry.addData("Color Blue  ", "%d", robot.color.blue());
+
+            telemetry.addData("Distance   ", "%.6f", robot.ods.getLightDetected());
+
             telemetry.update();
 
             // Pause for metronome tick.  40 mS each cycle = update 25 times a second.

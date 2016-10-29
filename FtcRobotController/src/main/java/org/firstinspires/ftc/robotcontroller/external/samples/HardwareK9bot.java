@@ -1,11 +1,17 @@
 package org.firstinspires.ftc.robotcontroller.external.samples;
 
+import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareDevice;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.DeviceManager;
+import com.qualcomm.robotcore.hardware.IrSeekerSensor;
+import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
 
 import java.util.Map;
 
@@ -34,6 +40,11 @@ public class HardwareK9bot
     public DcMotor  rightMotor  = null;
     public Servo    arm         = null;
     public Servo    claw        = null;
+    public CRServo  continuous  = null;
+    public TouchSensor touch    = null;
+    public IrSeekerSensor seeker = null;
+    public ColorSensor color     = null;
+    public OpticalDistanceSensor ods = null;
 
     public final static double ARM_HOME = 0.2;
     public final static double CLAW_HOME = 0.2;
@@ -81,8 +92,42 @@ public class HardwareK9bot
         // Define and initialize ALL installed servos.
         arm = hwMap.servo.get("arm");
         claw = hwMap.servo.get("claw");
+
+        //Initialize the servos May be redundant.
+        arm.scaleRange(ARM_MIN_RANGE, ARM_MAX_RANGE);
+        claw.scaleRange(CLAW_MIN_RANGE, CLAW_MAX_RANGE);
+        arm.setDirection(Servo.Direction.FORWARD);
+        claw.setDirection(Servo.Direction.FORWARD);
         arm.setPosition(ARM_HOME);
         claw.setPosition(CLAW_HOME);
+
+
+        //continuous = hwMap.servo.get("continuous");
+        continuous = hwMap.crservo.get("continuous");
+        continuous.setDirection(CRServo.Direction.FORWARD);
+        continuous.setPower(128);  //Full Stop
+
+
+        // Touch Sensor
+        touch = hwMap.touchSensor.get("touch");
+
+        //IR Seeker sensor, require either a 600HZ or 1200HZ signal from playfield
+        seeker = hwMap.irSeekerSensor.get("seeker");
+        seeker.setMode(IrSeekerSensor.Mode.MODE_600HZ);
+
+        //Color Sensor
+        color = hwMap.colorSensor.get("color");
+        color.enableLed(true);
+
+
+        //Optical distance sensor
+        ods = hwMap.opticalDistanceSensor.get("range");
+        ods.enableLed(true);
+
+
+
+
+
 
         /* To see motors run:
              - uncomment these lines
@@ -90,8 +135,8 @@ public class HardwareK9bot
              - connect to test bench
              -use configuration "test sam b"
           */
-        leftMotor.setPower(0.5);
-        rightMotor.setPower(0.5);
+        //leftMotor.setPower(0.5);
+        //rightMotor.setPower(0.5);
     }
 
     /***
