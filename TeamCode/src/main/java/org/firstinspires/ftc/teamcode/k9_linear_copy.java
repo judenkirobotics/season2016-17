@@ -130,6 +130,40 @@ public class k9_linear_copy extends LinearOpMode {
             clawPosition = Range.clip(clawPosition, robot.CLAW_MIN_RANGE, robot.CLAW_MAX_RANGE);
             robot.claw.setPosition(clawPosition);
 
+
+
+
+            //
+            //  Code for linear interpolation of optical distance sensor.
+            // This should be wrapped in its own class at a later date
+            //
+            double opticalDistance[] = new double[9];
+            opticalDistance[0]   =   0.996;   // Index into array is also the inches value
+            opticalDistance[1]   =   0.20015;
+            opticalDistance[2]   =   0.071404;
+            opticalDistance[3]   =   0.02737;
+            opticalDistance[4]   =   0.014663;
+            opticalDistance[5]   =   0.01075;
+            opticalDistance[6]   =   0.006843;
+            opticalDistance[7]   =   0.004888;
+            opticalDistance[8]   =   0.002933;
+
+            double realDistance   = 0;
+
+
+            for(int i=0; i<opticalDistance.length; i++) {
+                if (robot.ods.getLightDetected() > opticalDistance[i]) {
+                    double delta;
+
+                    delta = (opticalDistance [i-1] - opticalDistance[i]) / opticalDistance[i];
+                    realDistance = i - delta;  // Course interpolation.  May want to make it better.
+                    break;
+                }
+            }
+
+
+
+
             //Test code for touch Sensor, have it spin sail (CRServo) servo
             //if (robot.touch.isPressed())
             //    robot.continuous.setPower(0);
@@ -142,6 +176,8 @@ public class k9_linear_copy extends LinearOpMode {
             telemetry.addData("cont",  "%.2f", continuous);
             telemetry.addData("left",  "%.2f", left);
             telemetry.addData("right", "%.2f", right);
+            telemetry.addData("left  encoder ", "%d", robot.leftMotor.getCurrentPosition());
+            telemetry.addData("right encoder ", "%d", robot.rightMotor.getCurrentPosition());
             telemetry.addData("arm port   ",  "%d", robot.arm.getPortNumber());
             telemetry.addData("claw port  ",  "%d", robot.claw.getPortNumber());
             telemetry.addData("cont port  ", "%d", robot.continuous.getPortNumber());
@@ -154,8 +190,10 @@ public class k9_linear_copy extends LinearOpMode {
             telemetry.addData("Color Blue  ", "%d", robot.color.blue());
 
             telemetry.addData("Distance   ", "%.6f", robot.ods.getLightDetected());
+            telemetry.addData("Real Distance ", "%1.2f", realDistance);
 
             telemetry.update();
+
 
             // Pause for metronome tick.  40 mS each cycle = update 25 times a second.
             robot.waitForTick(40);
