@@ -69,8 +69,8 @@ public class k9_linear_copy extends LinearOpMode {
     double          armPosition     = robot.ARM_HOME;                   // Servo safe position
     double          clawPosition    = robot.CLAW_HOME;                  // Servo safe position
     double          continuous      = 0.00;
-    final double    CLAW_SPEED      = 0.01 ;                            // sets rate to move servo
-    final double    ARM_SPEED       = 0.01 ;                            // sets rate to move servo
+    final double    CLAW_SPEED      = 0.00;                            // sets rate to move servo
+    final double    ARM_SPEED       = 0.00 ;                            // sets rate to move servo
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -127,8 +127,7 @@ public class k9_linear_copy extends LinearOpMode {
             // Move both servos to new position.
             armPosition  = Range.clip(armPosition, robot.ARM_MIN_RANGE, robot.ARM_MAX_RANGE);
             robot.arm.setPosition(armPosition);
-            clawPosition = Range.clip(clawPosition, robot.CLAW_MIN_RANGE, robot.CLAW_MAX_RANGE);
-            robot.claw.setPosition(clawPosition);
+            robot.claw.setPower(clawPosition);
 
 
 
