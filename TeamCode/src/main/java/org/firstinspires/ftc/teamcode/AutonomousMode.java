@@ -32,6 +32,6 @@ public class AutonomousMode extends LinearOpMode {
                 robot.leftMotor.setPower(0.5);
                 robot.rightMotor.setPower(0.25);
             }
-        }
+         }
     }
 }
