@@ -4,6 +4,7 @@ import android.os.SystemClock;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcontroller.external.samples.HardwareK9bot;
 
@@ -20,7 +21,9 @@ public class AutoDriveTest extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         robot.init(hardwareMap);
         waitForStart();
-        Drive myDrive = new Drive(robot.leftMotor, robot.rightMotor);
+        DcMotor[] leftMotors = new DcMotor[]{ robot.leftMotor };
+        DcMotor[] rightMotors = new DcMotor[]{ robot.rightMotor };
+        Drive myDrive = new Drive(leftMotors, rightMotors);
 
         // Move 12 inches
         myDrive.moveForward(12);

@@ -10,31 +10,39 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 public class Drive {
 
-    private DcMotor leftMotor   = null;
-    private DcMotor rightMotor  = null;
+    private DcMotor[] leftMotors   = null;
+    private DcMotor[] rightMotors  = null;
 
     private double MIN_DRIVE_DISTANCE = 0.0;
     private double MAX_DRIVE_DISTANCE = 120.0;
 
     private double FORWARD_POWER =  0.8;
     private double REVERSE_POWER = -0.8;
-    private double TURN_POWER    =  0.2;
+    private double TURN_POWER    =  0.4;
 
-    private double WHEEL_CIRC    = 2;
-    private double WHEEL_RPM     = 3;
+    private double WHEEL_CIRC    = 13;
+    private double WHEEL_RPM     = 2;   //Misnamed, fix should be RPS second not minute
 
-    private double TURN_PER_SECOND = 45;
+    private double TURN_PER_SECOND = 79.5;
 
 
     // Left and right are with respect to the robot
-    public Drive( DcMotor _leftMotor, DcMotor _rightMotor ) {
-        assert leftMotor != null;
-        assert rightMotor != null;
-        this.leftMotor = _leftMotor;
-        this.rightMotor = _rightMotor;
-        leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);  //Want to run with encoder but having issue
-        rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    public Drive( DcMotor[] _leftMotors, DcMotor[] _rightMotors ) {
+        assert leftMotors != null;
+        assert rightMotors != null;
+        assert leftMotors.length > 0;
+        assert rightMotors.length > 0;
+        this.leftMotors = _leftMotors;
+        this.rightMotors = _rightMotors;
+        // Set all DC Motors to run without encoders
+        for( DcMotor dcm : leftMotors ) {
+            dcm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        }
+        for (DcMotor dcm : rightMotors){
+            dcm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        }
     }
+
 
     public void turn(double degrees) {
         double time;
@@ -43,27 +51,36 @@ public class Drive {
 
         if (degrees > 0) {
             rightSign = -1;
-            leftSign  =  1;
+            leftSign  = -1;
             time = turnTime(degrees);
         }
         else {
             rightSign = 1;
-            leftSign  = -1;
+            leftSign  = 1;
             time = turnTime(degrees) * -1;
         }
 
+        for(DcMotor dcm : leftMotors){
+            dcm.setPower(leftSign * TURN_POWER);
+        }
 
-
-        leftMotor.setPower(leftSign * TURN_POWER);
-        rightMotor.setPower(rightSign * TURN_POWER);
+        for(DcMotor dcm : rightMotors) {
+            dcm.setPower(rightSign * TURN_POWER);
+        }
 
         SystemClock.sleep((long)(double)time);
 
-        leftMotor.setPower(0.0);
-        rightMotor.setPower(0.0);
+        for(DcMotor dcm : leftMotors) {
+            dcm.setPower(0.0);
+        }
+
+        for(DcMotor dcm : rightMotors) {
+            dcm.setPower(0.0);
+        }
 
 
     }
+
     public void moveForward(double distance) {
 
         double moveDistance;
@@ -76,19 +93,26 @@ public class Drive {
 
         //leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         //rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftMotor.setPower(FORWARD_POWER);
-        //leftMotor.setMaxSpeed(100);
-        rightMotor.setPower(FORWARD_POWER);
-        //rightMotor.setMaxSpeed(100);
+        for (DcMotor dcm : leftMotors){
+            dcm.setPower( - FORWARD_POWER);
+        }
+        for (DcMotor dcm : rightMotors){
+            dcm.setPower( FORWARD_POWER);
+        }
 
         //SystemClock.sleep((long)(double)time);
         SystemClock.sleep((long)(double)time);
 
-        leftMotor.setPower(0.0);
-        rightMotor.setPower(0.0);
-
+        for(DcMotor dcm : leftMotors) {
+            dcm.setPower(0.0);
+        }
+        for(DcMotor dcm : rightMotors) {
+            dcm.setPower(0.0);
+        }
 
     }
+
+    /*
     public void moveBackward(double distance) {
         double moveDistance;
         double   time;
@@ -100,16 +124,21 @@ public class Drive {
 
         //leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         //rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftMotor.setPower(REVERSE_POWER);
+        leftMotors.setPower(REVERSE_POWER);
         //leftMotor.setMaxSpeed(100);
-        rightMotor.setPower(REVERSE_POWER);
+        rightMotors.setPower(REVERSE_POWER);
         //rightMotor.setMaxSpeed(100);
 
         //SystemClock.sleep((long)(double)time);
         SystemClock.sleep((long)(double)time);
 
-        leftMotor.setPower(0.0);
-        rightMotor.setPower(0.0);
+        leftMotors.setPower(0.0);
+        rightMotors.setPower(0.0);
+
+    }
+    */
+
+    public void update() {
 
     }
 
