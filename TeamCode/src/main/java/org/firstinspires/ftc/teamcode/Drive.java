@@ -25,6 +25,10 @@ public class Drive {
 
     private double TURN_PER_SECOND = 79.5;
 
+    private long driveStopTime  = 0;
+
+    private boolean motorsStopped = true;
+
 
     // Left and right are with respect to the robot
     public Drive( DcMotor[] _leftMotors, DcMotor[] _rightMotors ) {
@@ -44,8 +48,8 @@ public class Drive {
     }
 
 
-    public void turn(double degrees) {
-        double time;
+    public void turn(double degrees, double power) {
+        long time;
         double leftSign;
         double rightSign;
 
@@ -60,16 +64,21 @@ public class Drive {
             time = turnTime(degrees) * -1;
         }
 
+        // May want to have this modify existing motor power to allow incremental turning while moving.
         for(DcMotor dcm : leftMotors){
-            dcm.setPower(leftSign * TURN_POWER);
+            dcm.setPower(leftSign * power);
+            //dcm.setPower(dcm.getPower() +(leftSign * power));
         }
 
         for(DcMotor dcm : rightMotors) {
-            dcm.setPower(rightSign * TURN_POWER);
+            dcm.setPower(rightSign * power);
+            //dcm.setPower(dcm.getPower() +(rightSign * power));
         }
 
-        SystemClock.sleep((long)(double)time);
-
+        //SystemClock.sleep((long)(double)time);
+        driveStopTime = time + SystemClock.elapsedRealtime();
+        motorsStopped = false;
+        /*
         for(DcMotor dcm : leftMotors) {
             dcm.setPower(0.0);
         }
@@ -77,14 +86,15 @@ public class Drive {
         for(DcMotor dcm : rightMotors) {
             dcm.setPower(0.0);
         }
+        */
 
 
     }
 
-    public void moveForward(double distance) {
+    public void moveForward(double distance , double power) {
 
         double moveDistance;
-        double   time;
+        long   time;
         // Input distance will be in inches, perform a range check
         moveDistance = rangeCheck(distance);
 
@@ -94,21 +104,25 @@ public class Drive {
         //leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         //rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         for (DcMotor dcm : leftMotors){
-            dcm.setPower( - FORWARD_POWER);
+            dcm.setPower( - power);
         }
         for (DcMotor dcm : rightMotors){
-            dcm.setPower( FORWARD_POWER);
+            dcm.setPower( power);
         }
 
         //SystemClock.sleep((long)(double)time);
-        SystemClock.sleep((long)(double)time);
+        //SystemClock.sleep((long)(double)time);
+        driveStopTime = time + SystemClock.elapsedRealtime();
+        motorsStopped = false;
 
+        /*
         for(DcMotor dcm : leftMotors) {
             dcm.setPower(0.0);
         }
         for(DcMotor dcm : rightMotors) {
             dcm.setPower(0.0);
         }
+        */
 
     }
 
@@ -139,8 +153,32 @@ public class Drive {
     */
 
     public void update() {
-
+        if  (SystemClock.elapsedRealtime()>driveStopTime) {
+            for(DcMotor dcm : leftMotors) {
+                dcm.setPower(0.0);
+            }
+            for(DcMotor dcm : rightMotors) {
+                dcm.setPower(0.0);
+            }
+            motorsStopped = true;
+        }
     }
+
+
+    public boolean motorsRunning () {
+        return (!motorsStopped);
+    }
+
+    public void allStop(){
+        for(DcMotor dcm : leftMotors) {
+            dcm.setPower(0.0);
+        }
+        for(DcMotor dcm : rightMotors) {
+            dcm.setPower(0.0);
+        }
+        motorsStopped = true;
+    }
+
 
     private double rangeCheck(double distance) {
         if (distance < MIN_DRIVE_DISTANCE)
@@ -150,12 +188,12 @@ public class Drive {
         return distance;
     }
 
-    private double moveTime(double distance, double rpm, double circumferance) {
-        return (distance / (rpm * circumferance) * 1000);
+    private long moveTime(double distance, double rpm, double circumferance) {
+        return (long)(distance / (rpm * circumferance) * 1000);
     }
 
-    private double turnTime(double degrees) {
-        return ((degrees / TURN_PER_SECOND) *1000);
+    private long turnTime(double degrees) {
+        return (long)((degrees / TURN_PER_SECOND) *1000);
     }
 
 
