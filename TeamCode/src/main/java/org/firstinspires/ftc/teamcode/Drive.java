@@ -91,6 +91,26 @@ public class Drive {
 
     }
 
+    public void drift(double power) {
+        if (power > 0) {
+            for(DcMotor dcm : leftMotors){
+                dcm.setPower(dcm.getPower() +(power));
+            }
+            for(DcMotor dcm : rightMotors) {
+                dcm.setPower(dcm.getPower() +(power));
+            }
+        }
+        else {
+            for(DcMotor dcm : leftMotors){
+                dcm.setPower(dcm.getPower() +(power));
+            }
+            for(DcMotor dcm : rightMotors) {
+                dcm.setPower(dcm.getPower() +(power));
+            }
+        }
+
+    }
+
     public void moveForward(double distance , double power) {
 
         double moveDistance;

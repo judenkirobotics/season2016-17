@@ -26,31 +26,31 @@ public class AutoDriveTest extends LinearOpMode {
         Drive myDrive = new Drive(leftMotors, rightMotors);
 
         // Move 12 inches
-        myDrive.moveForward(12);
-
-        //Sleep 3 seconds
-        SystemClock.sleep(3000);
-
-        // Move 6 inches
-        myDrive.moveForward(6);
-
-        //Sleep 3 seconds
-        SystemClock.sleep(3000);
-
-        // Move 3 inches
-        myDrive.moveForward(3);
-
-        //Sleep 3 seconds
-        SystemClock.sleep(3000);
+        myDrive.moveForward(12, 0.8);
+        while (myDrive.motorsRunning() == true) {
+            myDrive.update();
+        }
 
         //Turn 90 degrees
-        myDrive.turn(90);
+        myDrive.turn(90, 0.4);
+        while (myDrive.motorsRunning() == true) {
+            myDrive.update();
+        }
+        // Move 72 inches stop when we see white line
+        myDrive.moveForward(72, 0.8);
+        while ((myDrive.motorsRunning() == true) && (robot.color.red() < 2 && robot.color.green() < 2 && robot.color.blue() < 2 )) {
+            myDrive.update();
+        }
+        myDrive.allStop();
 
-        //Sleep 3 seconds
-        SystemClock.sleep(3000);
+        //Turn 90 degrees
+        myDrive.turn(90, 0.4);
+        while (myDrive.motorsRunning() == true) {
+            myDrive.update();
+        }
 
-        //Turn -180 degrees
-        myDrive.turn(-180);
+
+
 
         while(opModeIsActive()) {
             idle();

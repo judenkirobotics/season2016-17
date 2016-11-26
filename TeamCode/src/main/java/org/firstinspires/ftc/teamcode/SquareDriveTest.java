@@ -24,49 +24,74 @@ public class SquareDriveTest extends LinearOpMode {
         Drive myDrive = new Drive(leftMotors, rightMotors);
 
         // Move 36 inches
-        myDrive.moveForward(24);
+        myDrive.moveForward(24 , 0.8);
+        while (myDrive.motorsRunning() == true) {
+            myDrive.update();
+        }
+
 
         // Sleep 1 seconds
         //SystemClock.sleep(1000);
 
         // Turn 90 degrees
-        myDrive.turn(90);
+        myDrive.turn(90, 0.4);
+        while (myDrive.motorsRunning() == true) {
+            myDrive.update();
+        }
 
         // Sleep 3 seconds
         //SystemClock.sleep(1000);
 
         // Move 36 inches
-        myDrive.moveForward(24);
+        myDrive.moveForward(24 , 0.8);
+        while (myDrive.motorsRunning() == true) {
+            myDrive.update();
+        }
 
         // Sleep 1 second
         //SystemClock.sleep(1000);
 
         // Turn 90 degrees
-        myDrive.turn(90);
+        myDrive.turn(90, 0.4);
+        while (myDrive.motorsRunning() == true) {
+            myDrive.update();
+        }
 
         // Sleep 1 seconds
         //SystemClock.sleep(1000);
 
         // Move 36 inches
-        myDrive.moveForward(24);
+        myDrive.moveForward(24 , 0.8);
+        while (myDrive.motorsRunning() == true) {
+            myDrive.update();
+        }
 
         // Sleep 1 seconds
         //SystemClock.sleep(1000);
 
         // Turn 90 degrees
-        myDrive.turn(90);
+        myDrive.turn(90, 0.4);
+        while (myDrive.motorsRunning() == true) {
+            myDrive.update();
+        }
 
         // Sleep 1 seconds
         //SystemClock.sleep(1000);
 
         // Move 36 inches
-        myDrive.moveForward(24);
+        myDrive.moveForward(24 , 0.8);
+        while (myDrive.motorsRunning() == true) {
+            myDrive.update();
+        }
 
         // Sleep 1 Second
         //SystemClock.sleep(1000);
 
         // Turn 90 degrees
-        myDrive.turn(90);
+        myDrive.turn(90, 0.4);
+        while (myDrive.motorsRunning() == true) {
+            myDrive.update();
+        }
 
         while(opModeIsActive()) {
             idle();

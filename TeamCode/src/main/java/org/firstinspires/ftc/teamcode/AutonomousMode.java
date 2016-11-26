@@ -9,7 +9,7 @@ import org.firstinspires.ftc.robotcontroller.external.samples.HardwareK9bot;
  * Created by judenki on 11/5/16.
  */
 
-@Autonomous(name="Juden-Ki Autonomous 1", group="Juden-Ki")
+@Autonomous(name="test Autonomous", group="Juden-Ki")
 public class AutonomousMode extends LinearOpMode {
     //RobotTypeX robot;
     HardwareK9bot robot = new HardwareK9bot();
