@@ -1,12 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 
-import android.os.SystemClock;
-
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import org.firstinspires.ftc.robotcontroller.external.samples.HardwareK9bot;
-import org.firstinspires.ftc.robotcontroller.external.samples.KernelPanicPlatform;
 
 /**
  * Created by judenki on 11/19/16.

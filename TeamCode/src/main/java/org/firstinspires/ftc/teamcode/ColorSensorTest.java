@@ -15,46 +15,46 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 @TeleOp(name="Check color sensor(s)", group="Configuration")
 public class ColorSensorTest extends LinearOpMode {
 
-    // Completely made up numbers
-    public static final int COLOR_SENSOR_1_ADDRESS = 0x10;
-    public static final int COLOR_SENSOR_2_ADDRESS = 0x11;
+    /*********************************************************************
+     * THIS WORKS!!!!  Do not change a thing, put in platform, driver, and
+     * autonomous code
+     *********************************************************************/
 
-    List<ColorSensor> colorSensors = new ArrayList<ColorSensor>();
-    //ColorSensor color;
+
+
+    // For unknown reasons must convert the 8-bit address programmed by the MR tool to a
+    // 7-bit address.  This is effectively a divide by two.
+    public static final int COLOR_SENSOR_BOTTOM_ADDRESS = 0x3c>>1;
+    public static final int COLOR_SENSOR_SIDE_ADDRESS = 0x3e>>1;
+
+    ColorSensor bottomSensor = null;
+    ColorSensor sideSensor   = null;
 
     @Override
     public void runOpMode() throws InterruptedException {
 
-        //color = hardwareMap.colorSensor.get("dim");
 
-        for( Map.Entry<String, ColorSensor> c : hardwareMap.colorSensor.entrySet() ) {
-            ColorSensor sensor = c.getValue();
-            if( c.getKey().equals("<device-name-1>") ) {
-                sensor.setI2cAddress( new I2cAddr(0x10) );
-            }
-            else if( c.getKey().equals("<device-name-2>") ) {
-                sensor.setI2cAddress( new I2cAddr(0x11) );
-            }
-            // ...
-            colorSensors.add( sensor );
-        }
-
-        telemetry.addData( "Number of sensors: ", "%d", colorSensors.size() );
-        telemetry.update();
-
+        bottomSensor = hardwareMap.colorSensor.get("color bottom");
+        bottomSensor.setI2cAddress(I2cAddr.create7bit(COLOR_SENSOR_BOTTOM_ADDRESS));
+        bottomSensor.enableLed(true);
+        sideSensor = hardwareMap.colorSensor.get("color side");
+        sideSensor.setI2cAddress(I2cAddr.create7bit(COLOR_SENSOR_SIDE_ADDRESS));
+        sideSensor.enableLed(false);
 
         // wait for the start button to be pressed
         waitForStart();
 
         while(opModeIsActive()) {
-            int i = 0;
-            for( ColorSensor color : colorSensors ) {
-                telemetry.addLine("Sensor " + i + " (" + String.format("0x%x", color.getI2cAddress().get8Bit()) + ")" );
-                telemetry.addData("    Red   ", "%d", color.red());
-                telemetry.addData("    Green ", "%d", color.green());
-                telemetry.addData("    Blue  ", "%d", color.blue());
-                i += 1;
-            }
+
+            telemetry.addData("Bottom Address - ", COLOR_SENSOR_BOTTOM_ADDRESS);
+            telemetry.addData("Bottom    Red   ", "%d", bottomSensor.red());
+            telemetry.addData("Bottom    Green ", "%d", bottomSensor.green());
+            telemetry.addData("Bottom    Blue  ", "%d", bottomSensor.blue());
+            telemetry.addData("Side   Address - ", COLOR_SENSOR_SIDE_ADDRESS);
+            telemetry.addData("Side      Red   ", "%d", sideSensor.red());
+            telemetry.addData("Side      Green ", "%d", sideSensor.green());
+            telemetry.addData("Side      Blue  ", "%d", sideSensor.blue());
+
             telemetry.update();
             idle();
         }

@@ -6,6 +6,16 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 /**
  * Created by judenki on 11/12/16.
+ *
+ * NEED TO DO;
+ *
+ * Add open loop (no time) and closed loop (time based) controls for moveForward and turn
+ *
+ * Rename moveForward() to move()
+ *
+ * DONE -- Add method to handle WHEEL_CIRC, WHEEL_RPM, and TURN_PER_SECOND.
+ *
+ * Get motors to run with the encoder active to utilize the controllers PID.
  */
 
 public class Drive {
@@ -48,6 +58,7 @@ public class Drive {
     }
 
 
+
     public void turn(double degrees, double power) {
         long time;
         double leftSign;
@@ -64,32 +75,18 @@ public class Drive {
             time = turnTime(degrees) * -1;
         }
 
-        // May want to have this modify existing motor power to allow incremental turning while moving.
         for(DcMotor dcm : leftMotors){
             dcm.setPower(leftSign * power);
-            //dcm.setPower(dcm.getPower() +(leftSign * power));
         }
 
         for(DcMotor dcm : rightMotors) {
             dcm.setPower(rightSign * power);
-            //dcm.setPower(dcm.getPower() +(rightSign * power));
         }
 
-        //SystemClock.sleep((long)(double)time);
         driveStopTime = time + SystemClock.elapsedRealtime();
         motorsStopped = false;
-        /*
-        for(DcMotor dcm : leftMotors) {
-            dcm.setPower(0.0);
-        }
-
-        for(DcMotor dcm : rightMotors) {
-            dcm.setPower(0.0);
-        }
-        */
-
-
     }
+
 
     public void drift(double power) {
         if (power > 0) {
@@ -115,6 +112,7 @@ public class Drive {
 
         double moveDistance;
         long   time;
+
         // Input distance will be in inches, perform a range check
         moveDistance = rangeCheck(distance);
 
@@ -146,31 +144,6 @@ public class Drive {
 
     }
 
-    /*
-    public void moveBackward(double distance) {
-        double moveDistance;
-        double   time;
-        // Input distance will be in inches, perform a range check
-        moveDistance = rangeCheck(distance);
-
-        //Calculate how long to move.
-        time =  moveTime(moveDistance, WHEEL_RPM, WHEEL_CIRC);
-
-        //leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        //rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftMotors.setPower(REVERSE_POWER);
-        //leftMotor.setMaxSpeed(100);
-        rightMotors.setPower(REVERSE_POWER);
-        //rightMotor.setMaxSpeed(100);
-
-        //SystemClock.sleep((long)(double)time);
-        SystemClock.sleep((long)(double)time);
-
-        leftMotors.setPower(0.0);
-        rightMotors.setPower(0.0);
-
-    }
-    */
 
     public void update() {
         if  (SystemClock.elapsedRealtime()>driveStopTime) {
@@ -197,6 +170,12 @@ public class Drive {
             dcm.setPower(0.0);
         }
         motorsStopped = true;
+    }
+
+    public void setParams(double wheelCirc, double wheelRPM, double turnPerSecond) {
+        WHEEL_CIRC = wheelCirc;
+        WHEEL_RPM = wheelRPM;
+        TURN_PER_SECOND = turnPerSecond;
     }
 
 

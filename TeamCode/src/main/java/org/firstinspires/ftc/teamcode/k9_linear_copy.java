@@ -170,7 +170,6 @@ public class k9_linear_copy extends LinearOpMode {
 
 
 
-
             //Test code for touch Sensor, have it spin sail (CRServo) servo
             //if (robot.touch.isPressed())
             //    robot.continuous.setPower(0);
@@ -183,6 +182,10 @@ public class k9_linear_copy extends LinearOpMode {
             telemetry.addData("cont",  "%.2f", continuous);
             telemetry.addData("left",  "%.2f", left);
             telemetry.addData("right", "%.2f", right);
+            telemetry.addData("heading", "%d", robot.gyro.getHeading());
+            telemetry.addData("rawX", "%d", robot.gyro.rawX());
+            telemetry.addData("rawY", "%d", robot.gyro.rawY());
+            telemetry.addData("rawZ", "%d", robot.gyro.rawZ());
             telemetry.addData("left  encoder ", "%d", robot.leftMotor.getCurrentPosition());
             telemetry.addData("right encoder ", "%d", robot.rightMotor.getCurrentPosition());
             telemetry.addData("arm port   ",  "%d", robot.arm.getPortNumber());
