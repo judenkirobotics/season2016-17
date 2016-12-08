@@ -108,6 +108,17 @@ public class Drive {
 
     }
 
+    public void driveMove(double forwardPower, double driftPower){
+        for (DcMotor dcm : leftMotors){
+            dcm.setPower( - forwardPower + driftPower);
+        }
+        for (DcMotor dcm : rightMotors){
+            dcm.setPower( forwardPower + driftPower);
+        }
+
+    }
+
+
     public void moveForward(double distance , double power) {
 
         double moveDistance;

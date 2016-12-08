@@ -27,6 +27,11 @@ public class KernelPanicPlatform {
     public DcMotor  leftMotorBack   = null;
     public DcMotor  rightMotorBack  = null;
     public GyroSensor gyro = null;
+
+    // For unknown reasons must convert the 8-bit address programmed by the MR tool to a
+    // 7-bit address.  This is effectively a divide by two.
+    public static final int COLOR_SENSOR_BOTTOM_ADDRESS = 0x3c>>1;
+    public static final int COLOR_SENSOR_SIDE_ADDRESS = 0x3e>>1;
     public ColorSensor colorBottom = null;
     public ColorSensor colorSide = null;
     public I2cDevice range = null;
@@ -61,17 +66,20 @@ public class KernelPanicPlatform {
         }
 
         //configure 2 color sensors
-        colorSide = ahwMap.colorSensor.get("colorSide");
+        colorSide = ahwMap.colorSensor.get("color side");
+        colorSide.setI2cAddress(I2cAddr.create7bit(COLOR_SENSOR_SIDE_ADDRESS));
         colorSide.enableLed(false);
-        colorBottom = ahwMap.colorSensor.get("colorBottom");
+        colorBottom = ahwMap.colorSensor.get("color bottom");
+        colorBottom.setI2cAddress(I2cAddr.create7bit(COLOR_SENSOR_BOTTOM_ADDRESS));
         colorBottom.enableLed(true);
-
+/*
         //configure range sensor
         range = ahwMap.i2cDevice.get("range");
         rangeReader = new I2cDeviceSynchImpl(range, I2cAddr.create8bit(0x28), false);
         rangeReader.engage();
         // rangeValue[] = rangeReader.read(0x04, 2);  //Read 2 bytes starting at 0x04
         //Make method and wrapper class for all of this
+*/
 
         //Configure Servos
         frontServo = ahwMap.servo.get("frontServo");
