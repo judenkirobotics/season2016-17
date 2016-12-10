@@ -87,7 +87,7 @@ public class JudenKiDriverMode extends LinearOpMode {
             telemetry.addData("Side      Green ", "%d", robot.colorTheSide.green());
             telemetry.addData("Side      Blue  ", "%d", robot.colorTheSide.blue());
 */
-            telemetry.addData("Catapult  touch ", robot.touchCat.isPressed()    );
+            telemetry.addData("Catapult Fried  Dill  Pickle  touch ", robot.touchCat.isPressed()    );
             telemetry.update();
 
 
