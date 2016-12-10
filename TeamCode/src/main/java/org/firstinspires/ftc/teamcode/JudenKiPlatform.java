@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.HardwareDevice;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.DeviceManager;
 import com.qualcomm.robotcore.hardware.I2cAddr;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import java.util.Map;
@@ -24,6 +25,7 @@ public class JudenKiPlatform {
     public ColorSensor colorTheSide = null;
     public GyroSensor gyro = null;
     public TouchSensor touchCat     = null;
+    public Servo beaconServo = null;
 
     // For unknown reasons must convert the 8-bit address programmed by the MR tool to a
     // 7-bit address.  This is effectively a divide by two.

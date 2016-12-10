@@ -26,27 +26,31 @@ public class KernelPanicAutonomous extends LinearOpMode {
         waitForStart();
 
         // Move forward some
-        myDrive.moveForward(24 , 0.8);
+        myDrive.moveForward(10, 0.8);
         while (myDrive.motorsRunning() == true) {
             myDrive.update();
         }
 
         //Try to turn 45 degrees
-        currentHeading = robot.gyro.getHeading();
+        /*currentHeading = robot.gyro.getHeading();
         nextHeading = newHeading(currentHeading, 45);
-        myDrive.driveMove(0,0.5);
-        while(robot.gyro.getHeading() < nextHeading) {
+        myDrive.driveMove(0,0.25);
+        while(robot.gyro.getHeading() <= nextHeading) {
             //Kill some time
+            telemetry.addData("heading", robot.gyro.getHeading());
+            telemetry.update();
         }
         myDrive.allStop();
-
+*/
         //Move forward some more
-        myDrive.moveForward(24 , 0.8);
-        while (myDrive.motorsRunning() == true) {
-            myDrive.update();
+        //myDrive.moveForward(24 , 0.8);
+        //while (myDrive.motorsRunning() == true) {
+        //    myDrive.update();
+        //}
+
+        while(opModeIsActive()) {
+            idle();
         }
-
-
 
     }
 

@@ -3,6 +3,7 @@ package org.firstinspires.ftc.robotcontroller.external.samples;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.GyroSensor;
 import com.qualcomm.robotcore.hardware.HardwareDevice;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.DeviceManager;
@@ -45,6 +46,9 @@ public class HardwareK9bot
     public IrSeekerSensor seeker = null;
     public ColorSensor color     = null;
     public OpticalDistanceSensor ods = null;
+    public GyroSensor gyro = null;
+    public boolean gyroInit = false;
+
 
     public final static double ARM_HOME = 0.0;
     public final static double CLAW_HOME = 0.0;
@@ -131,6 +135,16 @@ public class HardwareK9bot
         ods.enableLed(true);
 
 
+
+        //Playing around with gyro sensor
+        gyro = hwMap.gyroSensor.get("gyro");
+        if(gyroInit == false) {
+            gyro.calibrate();
+            while (gyro.isCalibrating()  == true) {
+                // need to add break out
+            }
+            gyroInit = true;
+        }
 
 
 
