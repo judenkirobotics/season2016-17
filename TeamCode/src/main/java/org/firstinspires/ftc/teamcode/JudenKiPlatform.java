@@ -26,6 +26,8 @@ public class JudenKiPlatform {
     public GyroSensor gyro = null;
     public TouchSensor touchCat     = null;
     public Servo beaconServo = null;
+    //public DcMotor  ballPickerMotor = null;
+
 
     // For unknown reasons must convert the 8-bit address programmed by the MR tool to a
     // 7-bit address.  This is effectively a divide by two.
@@ -47,6 +49,7 @@ public class JudenKiPlatform {
         rightMotorBack = ahwMap.dcMotor.get("right motor back");
         leftMotorBack = ahwMap.dcMotor.get("left motor back");
         catapultMotor = ahwMap.dcMotor.get("catapult motor");
+        //ballPickerMotor = ahwMap.dcMotor.get("ball picker motor");
 
         //configure 2 color sensors
        /* colorTheSide = ahwMap.colorSensor.get("color side");
