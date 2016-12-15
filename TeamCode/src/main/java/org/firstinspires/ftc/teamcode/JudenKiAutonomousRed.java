@@ -1,3 +1,4 @@
+
 package org.firstinspires.ftc.teamcode;
 
 import android.os.SystemClock;
@@ -10,8 +11,8 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 /**
  * Created by judenki on 11/26/16.
  */
-@Autonomous(name="Juden-Ki Autonomous", group="Juden-Ki")
-public class JudenKiAutonomous  extends LinearOpMode {
+@Autonomous(name="Juden-Ki Autonomous Red", group="Juden-Ki")
+public class JudenKiAutonomousRed  extends LinearOpMode {
     //Juden Ki Launching Robot
     JudenKiPlatform robot = new JudenKiPlatform();
 
@@ -29,25 +30,26 @@ public class JudenKiAutonomous  extends LinearOpMode {
 
 
 // Move forward some
-        myDrive.moveForward(.5 , -0.6 );
+        myDrive.moveForward(3 , -0.6 );
         while (myDrive.motorsRunning() == true) {
             myDrive.update();
         }
 
 
         currentHeading = robot.gyro.getHeading();
-        nextHeading = newHeading(currentHeading, 38);
-        myDrive.driveMove(0,0.5);
-        while(robot.gyro.getHeading() < nextHeading) {
+        nextHeading = newHeading(currentHeading, -34);
+        myDrive.driveMove(0,-0.5);
+        while(robot.gyro.getHeading() > nextHeading) {
             //Kill some time
         }
         myDrive.allStop();
 
-        // Move backward some
-        myDrive.moveForward(10 , 0.6 );
+        // Move backwards  some
+        myDrive.moveForward(4.5 , 0.6 );
         while (myDrive.motorsRunning() == true) {
             myDrive.update();
         }
+
 
         shootTheBall(robot.catapultMotor,robot.touchCat);
 
@@ -55,12 +57,12 @@ public class JudenKiAutonomous  extends LinearOpMode {
 
         shootTheBall(robot.catapultMotor,robot.touchCat);
 
-        /*
-        myDrive.moveForward(-48,0.25);
+
+        myDrive.moveForward(55,-0.6);
         while (myDrive.motorsRunning() == true) {
             myDrive.update();
         }
-        */
+
 
 
 

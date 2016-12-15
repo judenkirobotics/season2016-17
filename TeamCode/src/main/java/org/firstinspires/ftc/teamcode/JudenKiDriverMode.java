@@ -71,14 +71,25 @@ public class JudenKiDriverMode extends LinearOpMode {
             myDrive.driveMove(forward, drift);
 
             //Actuate Catapult
+
             if (gamepad1.a)
                 robot.catapultMotor.setPower(.5);
             if (gamepad1.b)
                 robot.catapultMotor.setPower(.0);
-            //if (gamepad1.x)
-            //    robot.ballPickerMotor.setPower(.9);
-            //if (gamepad1.a)
-            //    robot.ballPickerMotor.setPower(0);
+            if (gamepad1.x)
+                robot.ballPickerMotor.setPower(.9);
+            if (gamepad1.y)
+                 robot.ballPickerMotor.setPower(0);
+
+            //Button Pusher Motor
+            if (gamepad1.right_bumper) {
+                robot.beaconServo.setPosition(1);
+            }
+            if (gamepad1.left_bumper) {
+                robot.beaconServo.setPosition(0);
+
+            }
+
 
             // Send telemetry message to signify robot running;
             telemetry.addData("left x",  "%.2f", gamepad1.left_stick_x);

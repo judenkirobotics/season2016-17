@@ -26,7 +26,7 @@ public class JudenKiPlatform {
     public GyroSensor gyro = null;
     public TouchSensor touchCat     = null;
     public Servo beaconServo = null;
-    //public DcMotor  ballPickerMotor = null;
+    public DcMotor  ballPickerMotor = null;
 
 
     // For unknown reasons must convert the 8-bit address programmed by the MR tool to a
@@ -49,7 +49,7 @@ public class JudenKiPlatform {
         rightMotorBack = ahwMap.dcMotor.get("right motor back");
         leftMotorBack = ahwMap.dcMotor.get("left motor back");
         catapultMotor = ahwMap.dcMotor.get("catapult motor");
-        //ballPickerMotor = ahwMap.dcMotor.get("ball picker motor");
+        ballPickerMotor = ahwMap.dcMotor.get("ball picker motor");
 
         //configure 2 color sensors
        /* colorTheSide = ahwMap.colorSensor.get("color side");
@@ -59,6 +59,13 @@ public class JudenKiPlatform {
         colorTheBottom.setI2cAddress(I2cAddr.create7bit(COLOR_SENSOR_BOTTOM_ADDRESS));
         colorTheBottom.enableLed(true);
 */
+
+        // Button servo
+        beaconServo = ahwMap.servo.get("Beacon servo");
+        beaconServo.scaleRange(0, 1);
+        beaconServo.setDirection(Servo.Direction.FORWARD);
+        beaconServo.setPosition(.5);
+
         //Gyro Sensor
         gyro = ahwMap.gyroSensor.get("gyro");
         gyro.calibrate();
