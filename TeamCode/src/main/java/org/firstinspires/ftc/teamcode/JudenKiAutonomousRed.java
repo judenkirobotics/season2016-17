@@ -31,25 +31,42 @@ public class JudenKiAutonomousRed  extends LinearOpMode {
 
 // Move forward some
         myDrive.moveForward(3 , -0.6 );
-        while (myDrive.motorsRunning() == true) {
+        while ((myDrive.motorsRunning() == true) && opModeIsActive()) {
             myDrive.update();
         }
 
 
         currentHeading = robot.gyro.getHeading();
-        nextHeading = newHeading(currentHeading, -34);
+        dataDump();
+        SystemClock.sleep(3000);
+
+
+        dataDump();
+        SystemClock.sleep(3000);
         myDrive.driveMove(0,-0.5);
-        while(robot.gyro.getHeading() > nextHeading) {
-            //Kill some time
+        while ((robot.gyro.getHeading() < 10) && opModeIsActive()) {
+                //Kill some time
+        }
+        myDrive.driveMove(0,-0.3);
+        while ((robot.gyro.getHeading() > 320) && opModeIsActive()) {
+             //Kill some time
         }
         myDrive.allStop();
 
+        //nextHeading = newHeading(currentHeading, -34);
+        //myDrive.driveMove(0,-0.5);
+        //while((robot.gyro.getHeading() > nextHeading) && opModeIsActive()) {
+            //Kill some time
+        //}
+        //myDrive.allStop();
+
         // Move backwards  some
         myDrive.moveForward(4.5 , 0.6 );
-        while (myDrive.motorsRunning() == true) {
+        while ((myDrive.motorsRunning() == true) && opModeIsActive()) {
             myDrive.update();
         }
 
+        SystemClock.sleep(1000);
 
         shootTheBall(robot.catapultMotor,robot.touchCat);
 
@@ -58,8 +75,8 @@ public class JudenKiAutonomousRed  extends LinearOpMode {
         shootTheBall(robot.catapultMotor,robot.touchCat);
 
 
-        myDrive.moveForward(55,-0.6);
-        while (myDrive.motorsRunning() == true) {
+        myDrive.moveForward(48,-0.6);
+        while ((myDrive.motorsRunning() == true) && opModeIsActive()) {
             myDrive.update();
         }
 
@@ -97,16 +114,21 @@ public class JudenKiAutonomousRed  extends LinearOpMode {
 
         //Wait some time for it to cycle past the touch sensor
         double currentTime = System.currentTimeMillis();
-        while (System.currentTimeMillis() - currentTime < 500) {
+        while ((System.currentTimeMillis() - currentTime < 500) && opModeIsActive()) {
             //wait to have the launcher move off the touch sensor
         }
 
-        while (touch.isPressed() != true) {
+        while ((touch.isPressed() != true) && opModeIsActive()) {
             //kill some time
         }
         mot.setPower(0);
 
 
+    }
+
+    void dataDump() {
+        telemetry.addData("heading", robot.gyro.getHeading());
+        telemetry.update();
     }
 }
 

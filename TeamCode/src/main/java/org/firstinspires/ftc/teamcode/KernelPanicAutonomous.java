@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 /**
  * Created by Kernel Panic on 11/26/16.
  */
-@Autonomous(name="Kernel Panic Autonomous", group="Kernel Panic")
+//@Autonomous(name="Kernel Panic Autonomous", group="Kernel Panic")
 public class KernelPanicAutonomous extends LinearOpMode {
     //Juden Ki Launching Robot
     KernelPanicPlatform robot = new KernelPanicPlatform();

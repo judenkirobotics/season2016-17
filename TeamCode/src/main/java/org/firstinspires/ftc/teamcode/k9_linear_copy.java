@@ -62,7 +62,7 @@ import org.firstinspires.ftc.robotcontroller.external.samples.HardwareK9bot;
  *
  */
 
-@TeleOp(name="K9bot: Telop Tank", group="K9bot")
+//@TeleOp(name="K9bot: Telop Tank", group="K9bot")
 public class k9_linear_copy extends LinearOpMode {
 
     /* Declare OpMode members. */

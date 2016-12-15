@@ -12,7 +12,7 @@ import java.util.concurrent.locks.Lock;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 
-@TeleOp(name="Check color sensor(s)", group="Configuration")
+//@TeleOp(name="Check color sensor(s)", group="Configuration")
 public class ColorSensorTest extends LinearOpMode {
 
     /*********************************************************************

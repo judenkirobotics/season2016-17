@@ -14,7 +14,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 
 
-@TeleOp(name="Kernel Panic Driver Mode", group="Kernel Panic")
+//@TeleOp(name="Kernel Panic Driver Mode", group="Kernel Panic")
 public class KernelPanicDriverMode extends LinearOpMode {
 
     KernelPanicPlatform robot = new KernelPanicPlatform();

@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 /**
  * Created by judenki on 11/19/16.
  */
-@Autonomous(name="Square Drive Test", group="Kernel-Panic")
+//@Autonomous(name="Square Drive Test", group="Kernel-Panic")
 public class SquareDriveTest extends LinearOpMode {
     KernelPanicPlatform robot = new KernelPanicPlatform();
 

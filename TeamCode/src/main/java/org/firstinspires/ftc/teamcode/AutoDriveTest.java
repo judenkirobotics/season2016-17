@@ -12,7 +12,7 @@ import org.firstinspires.ftc.robotcontroller.external.samples.HardwareK9bot;
  * Created by judenki on 11/12/16.
  */
 
-@Autonomous(name="Autonomous Drive Test", group="Juden-Ki")
+//@Autonomous(name="Autonomous Drive Test", group="Juden-Ki")
 public class AutoDriveTest extends LinearOpMode {
     //RobotTypeX robot;
     HardwareK9bot robot = new HardwareK9bot();
