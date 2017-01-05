@@ -21,52 +21,58 @@ public class JudenKiAutonomousBlue  extends LinearOpMode {
         int nextHeading;
 
         robot.init(hardwareMap);
-        DcMotor[] leftMotors = new DcMotor[]{ robot.leftMotorFront, robot.leftMotorBack };
-        DcMotor[] rightMotors = new DcMotor[]{ robot.rightMotorFront, robot.rightMotorBack};
+        DcMotor[] leftMotors = new DcMotor[]{robot.leftMotorFront, robot.leftMotorBack};
+        DcMotor[] rightMotors = new DcMotor[]{robot.rightMotorFront, robot.rightMotorBack};
         Drive myDrive = new Drive(leftMotors, rightMotors);
         myDrive.setParams(12.5, 1.5, 79.5);  //need to change these later
         waitForStart();
 
 
 // Move forward some
-        myDrive.moveForward(3 , -0.6 );
+        myDrive.moveForward(3, -0.6);
         while ((myDrive.motorsRunning() == true) && opModeIsActive()) {
             myDrive.update();
         }
 
 
+        /*
+         */
+
+
+        /* Move backwards  some
+        myDrive.moveForward(4.5, 0.6);
+        while ((myDrive.motorsRunning() == true) && opModeIsActive()) {
+            myDrive.update();
+        }
+          */
+
+
+        //SystemClock.sleep(1000);
+
+        shootTheBall(robot.catapultMotor, robot.touchCat);
+
+        //SystemClock.sleep(1000);
+
+        shootTheBall(robot.catapultMotor, robot.touchCat);
+
+
+        //start turn
+        myDrive.driveMove(0, 0.5);
+
         currentHeading = robot.gyro.getHeading();
-        nextHeading = newHeading(currentHeading, 34);
-        myDrive.driveMove(0,0.5);
-        while((robot.gyro.getHeading() < nextHeading) && opModeIsActive()) {
+        while ((currentHeading > 17) || (currentHeading < 13) && opModeIsActive()) {
             //Kill some time
+            currentHeading = robot.gyro.getHeading();
         }
         myDrive.allStop();
 
-        // Move backwards  some
-        myDrive.moveForward(4.5 , 0.6 );
-        while ((myDrive.motorsRunning() == true) && opModeIsActive()) {
-            myDrive.update();
-        }
-
-        SystemClock.sleep(1000);
-
-        shootTheBall(robot.catapultMotor,robot.touchCat);
-
-        SystemClock.sleep(1000);
-
-        shootTheBall(robot.catapultMotor,robot.touchCat);
-
-
-        myDrive.moveForward(48,-0.6);
+        myDrive.moveForward(36, -0.6);
         while ((myDrive.motorsRunning() == true) && opModeIsActive()) {
             myDrive.update();
         }
 
 
-
-
-        while(opModeIsActive()) {
+        while (opModeIsActive()) {
             idle();
         }
 
@@ -74,13 +80,13 @@ public class JudenKiAutonomousBlue  extends LinearOpMode {
 
     }
 
-    public int newHeading (int currentHeading, int turnHeading) {
+    public int newHeading(int currentHeading, int turnHeading) {
         int tempHeading;
 
         tempHeading = currentHeading + turnHeading;
 
         if (tempHeading > 360)
-            tempHeading = tempHeading -360;
+            tempHeading = tempHeading - 360;
 
         if (tempHeading < 0)
             tempHeading = tempHeading + 360;
@@ -90,23 +96,21 @@ public class JudenKiAutonomousBlue  extends LinearOpMode {
 
     }
 
-    public void shootTheBall (DcMotor mot, TouchSensor touch)  {
+    public void shootTheBall(DcMotor mot, TouchSensor touch) {
 
 
-        mot.setPower(.90);
+        mot.setPower(0.90);
 
         //Wait some time for it to cycle past the touch sensor
         double currentTime = System.currentTimeMillis();
         while ((System.currentTimeMillis() - currentTime < 500) && opModeIsActive()) {
-            //wait to have the launcher move off the touch sensor
+            //Kill some time
         }
-
+        mot.setPower(.40);
         while ((touch.isPressed() != true) && opModeIsActive()) {
             //kill some time
         }
         mot.setPower(0);
-
-
     }
 }
 

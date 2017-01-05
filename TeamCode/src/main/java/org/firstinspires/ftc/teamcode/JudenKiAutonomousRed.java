@@ -35,52 +35,44 @@ public class JudenKiAutonomousRed  extends LinearOpMode {
             myDrive.update();
         }
 
+        //start turn
+        myDrive.driveMove(0, -0.5);
 
         currentHeading = robot.gyro.getHeading();
-        dataDump();
-        SystemClock.sleep(3000);
-
-
-        dataDump();
-        SystemClock.sleep(3000);
-        myDrive.driveMove(0,-0.5);
-        while ((robot.gyro.getHeading() < 10) && opModeIsActive()) {
-                //Kill some time
-        }
-        myDrive.driveMove(0,-0.3);
-        while ((robot.gyro.getHeading() > 320) && opModeIsActive()) {
-             //Kill some time
+        while ((currentHeading > 327) || (currentHeading < 323) && opModeIsActive()) {
+            //Kill some time
+            currentHeading = robot.gyro.getHeading();
         }
         myDrive.allStop();
 
-        //nextHeading = newHeading(currentHeading, -34);
-        //myDrive.driveMove(0,-0.5);
-        //while((robot.gyro.getHeading() > nextHeading) && opModeIsActive()) {
+        //Shoot Balls (2)
+        shootTheBall(robot.catapultMotor, robot.touchCat);
+        shootTheBall(robot.catapultMotor, robot.touchCat);
+
+
+        //start turn
+        myDrive.driveMove(0, 0.5);
+
+        currentHeading = robot.gyro.getHeading();
+        while ((currentHeading > 342) || (currentHeading < 338) && opModeIsActive()) {
             //Kill some time
-        //}
-        //myDrive.allStop();
+            currentHeading = robot.gyro.getHeading();
+        }
+        myDrive.allStop();
 
-        // Move backwards  some
-        myDrive.moveForward(4.5 , 0.6 );
+        // Move forward some
+        myDrive.moveForward(25, -0.6 );
         while ((myDrive.motorsRunning() == true) && opModeIsActive()) {
             myDrive.update();
         }
 
-        SystemClock.sleep(1000);
+        SystemClock.sleep(5000);
 
-        shootTheBall(robot.catapultMotor,robot.touchCat);
-
-        SystemClock.sleep(1000);
-
-        shootTheBall(robot.catapultMotor,robot.touchCat);
-
-
-        myDrive.moveForward(48,-0.6);
+        // Move forward some
+        myDrive.moveForward(10, -0.6 );
         while ((myDrive.motorsRunning() == true) && opModeIsActive()) {
             myDrive.update();
         }
-
-
 
 
         while(opModeIsActive()) {
@@ -109,15 +101,14 @@ public class JudenKiAutonomousRed  extends LinearOpMode {
 
     public void shootTheBall (DcMotor mot, TouchSensor touch)  {
 
-
-        mot.setPower(.90);
+        mot.setPower(1.0);
 
         //Wait some time for it to cycle past the touch sensor
         double currentTime = System.currentTimeMillis();
         while ((System.currentTimeMillis() - currentTime < 500) && opModeIsActive()) {
-            //wait to have the launcher move off the touch sensor
+            //Kill some time
         }
-
+        mot.setPower(.40);
         while ((touch.isPressed() != true) && opModeIsActive()) {
             //kill some time
         }

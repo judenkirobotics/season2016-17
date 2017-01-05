@@ -79,12 +79,11 @@ public class JudenKiDriverMode extends LinearOpMode {
                 shootTheBall(robot.catapultMotor, robot.touchCat);
             if (gamepad1.b)
                 robot.catapultMotor.setPower(.0);
+
+
             if ((gamepad1.right_trigger > 0.1) && (gamepad1.left_trigger < 0.1))
                 robot.ballPickerMotor.setPower(.9);
-            else
-                 robot.ballPickerMotor.setPower(0);
-
-            if ((gamepad1.left_trigger > 0.1) && (gamepad1.right_trigger < 0.1))
+            else if ((gamepad1.left_trigger > 0.1) && (gamepad1.right_trigger < 0.1))
                 robot.ballPickerMotor.setPower(-0.9);
             else
                 robot.ballPickerMotor.setPower(0);
@@ -138,14 +137,14 @@ public class JudenKiDriverMode extends LinearOpMode {
     public void shootTheBall (DcMotor mot, TouchSensor touch)  {
 
 
-        mot.setPower(.90);
+        mot.setPower(1.0);
 
         //Wait some time for it to cycle past the touch sensor
         double currentTime = System.currentTimeMillis();
         while ((System.currentTimeMillis() - currentTime < 500) && opModeIsActive()) {
             //Kill some time
         }
-
+        mot.setPower(.40);
         while ((touch.isPressed() != true) && opModeIsActive()) {
             //kill some time
         }
