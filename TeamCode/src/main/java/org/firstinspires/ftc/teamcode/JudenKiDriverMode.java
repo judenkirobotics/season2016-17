@@ -42,11 +42,13 @@ public class JudenKiDriverMode extends LinearOpMode {
         DcMotor[] leftMotors = new DcMotor[]{ robot.leftMotorFront, robot.leftMotorBack };
         DcMotor[] rightMotors = new DcMotor[]{ robot.rightMotorFront, robot.rightMotorBack};
         Drive myDrive = new Drive(leftMotors, rightMotors);
+        ShootTheBall particle = new ShootTheBall();
 
 
 
         // Send telemetry message to signify robot waiting;
-        telemetry.addData("Say", "Hello Drivers");    //
+        telemetry.addData("Drivers...", "START YOUR ENGINES!!!!!!" +
+                " ;)");    //
         telemetry.update();
 
         // Wait for the game to start (driver presses PLAY)
@@ -76,9 +78,8 @@ public class JudenKiDriverMode extends LinearOpMode {
             //Actuate Catapult
 
             if (gamepad1.a)
-                shootTheBall(robot.catapultMotor, robot.touchCat);
-            if (gamepad1.b)
-                robot.catapultMotor.setPower(.0);
+                particle.shoot(robot.catapultMotor, robot.touchCat, this);
+
 
 
             if ((gamepad1.right_trigger > 0.1) && (gamepad1.left_trigger < 0.1))
@@ -111,7 +112,7 @@ public class JudenKiDriverMode extends LinearOpMode {
             telemetry.addData("Side      Green ", "%d", robot.colorTheSide.green());
             telemetry.addData("Side      Blue  ", "%d", robot.colorTheSide.blue());
 */
-            telemetry.addData("Catapult Fried  Dill  Pickle  touch ", robot.touchCat.isPressed()    );
+            telemetry.addData("Catapult Fried Dill Pickle touch ", robot.touchCat.isPressed()    );
             telemetry.update();
 
 
@@ -134,7 +135,7 @@ public class JudenKiDriverMode extends LinearOpMode {
         period.reset();
     }
 
-    public void shootTheBall (DcMotor mot, TouchSensor touch)  {
+    /*public void shootTheBall (DcMotor mot, TouchSensor touch)  {
 
 
         mot.setPower(1.0);
@@ -151,6 +152,6 @@ public class JudenKiDriverMode extends LinearOpMode {
         mot.setPower(0);
 
 
-    }
+    }*/
 
 }
