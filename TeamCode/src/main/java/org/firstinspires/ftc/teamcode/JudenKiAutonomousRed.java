@@ -27,7 +27,7 @@ public class JudenKiAutonomousRed  extends LinearOpMode {
         Drive myDrive = new Drive(leftMotors, rightMotors);
         myDrive.setParams(12.5, 1.5, 79.5);  //need to change these later
         waitForStart();
-
+        ShootTheBall particle = new ShootTheBall();
 
 // Move forward some
         myDrive.moveForward(3 , -0.6 );
@@ -46,8 +46,8 @@ public class JudenKiAutonomousRed  extends LinearOpMode {
         myDrive.allStop();
 
         //Shoot Balls (2)
-        shootTheBall(robot.catapultMotor, robot.touchCat);
-        shootTheBall(robot.catapultMotor, robot.touchCat);
+        particle.shoot(robot.catapultMotor, robot.touchCat, this);
+        particle.shoot(robot.catapultMotor, robot.touchCat, this);
 
 
         //start turn
@@ -95,24 +95,6 @@ public class JudenKiAutonomousRed  extends LinearOpMode {
             tempHeading = tempHeading + 360;
 
         return (tempHeading);
-
-
-    }
-
-    public void shootTheBall (DcMotor mot, TouchSensor touch)  {
-
-        mot.setPower(1.0);
-
-        //Wait some time for it to cycle past the touch sensor
-        double currentTime = System.currentTimeMillis();
-        while ((System.currentTimeMillis() - currentTime < 500) && opModeIsActive()) {
-            //Kill some time
-        }
-        mot.setPower(.40);
-        while ((touch.isPressed() != true) && opModeIsActive()) {
-            //kill some time
-        }
-        mot.setPower(0);
 
 
     }

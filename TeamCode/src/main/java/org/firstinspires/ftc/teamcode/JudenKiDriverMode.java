@@ -47,10 +47,15 @@ public class JudenKiDriverMode extends LinearOpMode {
 
 
         // Send telemetry message to signify robot waiting;
-        telemetry.addData("Drivers...", "START YOUR ENGINES!!!!!!" +
+        telemetry.addData("Drivers...", "START YOUR ENGINES!!!!!!!!!!" +
                 " ;)");    //
         telemetry.update();
 
+
+        //Initialize the catapult parameters
+        particle.setTouchDelay(500);
+        particle.setAbortDelay(2000);
+        particle.setMotorStopDelay(151);
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
@@ -77,29 +82,38 @@ public class JudenKiDriverMode extends LinearOpMode {
 
             //Actuate Catapult
 
-            if (gamepad1.a)
+            if (gamepad1.a) {
                 particle.shoot(robot.catapultMotor, robot.touchCat, this);
+                //robot.catapultMotor.setPower(1.0);
+            }
+            else if (gamepad1.b) {
+                robot.catapultMotor.setPower(1.0);
+            }
+            else if (gamepad1.x) {
+                robot.catapultMotor.setPower(0.75);
+            }
+            else if (gamepad1.y) {
+                robot.catapultMotor.setPower(0.5);
+            }
+            else {
+                robot.catapultMotor.setPower(0.0);
+            }
 
 
 
+
+
+            //Ball loading motor control.   use triggers for fast loading, bumpers for slow loading
             if ((gamepad1.right_trigger > 0.1) && (gamepad1.left_trigger < 0.1))
                 robot.ballPickerMotor.setPower(.9);
             else if ((gamepad1.left_trigger > 0.1) && (gamepad1.right_trigger < 0.1))
                 robot.ballPickerMotor.setPower(-0.9);
+            else if (gamepad1.right_bumper)
+                robot.ballPickerMotor.setPower(.2);
+            else if (gamepad1.left_bumper)
+                robot.ballPickerMotor.setPower(-0.2);
             else
                 robot.ballPickerMotor.setPower(0);
-
-
-
-            //Button Pusher Motor
-            if (gamepad1.right_bumper) {
-                robot.beaconServo.setPosition(1);
-            }
-            if (gamepad1.left_bumper) {
-                robot.beaconServo.setPosition(0);
-
-            }
-
 
             // Send telemetry message to signify robot running;
             telemetry.addData("left x",  "%.2f", gamepad1.left_stick_x);
