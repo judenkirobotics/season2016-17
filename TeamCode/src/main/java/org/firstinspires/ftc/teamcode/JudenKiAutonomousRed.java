@@ -26,50 +26,71 @@ public class JudenKiAutonomousRed  extends LinearOpMode {
         DcMotor[] rightMotors = new DcMotor[]{ robot.rightMotorFront, robot.rightMotorBack};
         Drive myDrive = new Drive(leftMotors, rightMotors);
         myDrive.setParams(12.5, 1.5, 79.5);  //need to change these later
-        waitForStart();
+        // Send telemetry message to signify robot waiting;
+        telemetry.addData("Say",  "You My Jedi, May Hit Play");
+        telemetry.update();        waitForStart();
         ShootTheBall particle = new ShootTheBall();
 
-// Move forward some
-        myDrive.moveForward(3 , -0.6 );
+        // Initialize catapult parameters
+        particle.setAbortDelay(2000);
+        particle.setTouchDelay(500);
+        particle.setMotorStopDelay(151);
+
+        //Move forward a small amount
+        myDrive.moveForward(4, -0.6);
         while ((myDrive.motorsRunning() == true) && opModeIsActive()) {
             myDrive.update();
         }
 
-        //start turn
-        myDrive.driveMove(0, -0.5);
 
+        //telemetry.addData("heading", robot.gyro.getHeading());
+        //telemetry.update();
+        //SystemClock.sleep(2000);
+        //Turn to roughly 35 degrees
+        myDrive.driveMove(0, -0.3);
         currentHeading = robot.gyro.getHeading();
-        while ((currentHeading > 327) || (currentHeading < 323) && opModeIsActive()) {
-            //Kill some time
+        while ((currentHeading < 290) || (currentHeading > 305) && opModeIsActive()) {
             currentHeading = robot.gyro.getHeading();
         }
         myDrive.allStop();
 
-        //Shoot Balls (2)
-        particle.shoot(robot.catapultMotor, robot.touchCat, this);
-        particle.shoot(robot.catapultMotor, robot.touchCat, this);
-
-
-        //start turn
-        myDrive.driveMove(0, 0.5);
-
-        currentHeading = robot.gyro.getHeading();
-        while ((currentHeading > 342) || (currentHeading < 338) && opModeIsActive()) {
-            //Kill some time
-            currentHeading = robot.gyro.getHeading();
-        }
-        myDrive.allStop();
-
-        // Move forward some
-        myDrive.moveForward(25, -0.6 );
+//Move forward a small amount
+        myDrive.moveForward(4, -0.6);
         while ((myDrive.motorsRunning() == true) && opModeIsActive()) {
             myDrive.update();
         }
 
-        SystemClock.sleep(5000);
+        //Shoot a particle
+        particle.shoot(robot.catapultMotor, robot.touchCat, this);
 
-        // Move forward some
-        myDrive.moveForward(10, -0.6 );
+        //Attempt to load second particle
+        robot.ballPickerMotor.setPower(.9);
+        SystemClock.sleep(2500);
+        robot.ballPickerMotor.setPower(-.9);
+        SystemClock.sleep(700);
+        robot.ballPickerMotor.setPower(0);
+
+        //Hopefully shoot second particle
+        particle.shoot(robot.catapultMotor, robot.touchCat, this);
+
+
+        //turn to roughly 45 degrees from initial heading
+        myDrive.driveMove(0, 0.3);
+        currentHeading = robot.gyro.getHeading();
+        while ((currentHeading < 310) || (currentHeading > 320) && opModeIsActive()) {
+            currentHeading = robot.gyro.getHeading();
+        }
+        myDrive.allStop();
+
+        //Move forward some
+        myDrive.moveForward(32, -0.6);
+        while ((myDrive.motorsRunning() == true) && opModeIsActive()) {
+            myDrive.update();
+        }
+
+        //take a break then move forward again
+        SystemClock.sleep(2000);
+        myDrive.moveForward(6, -0.6);
         while ((myDrive.motorsRunning() == true) && opModeIsActive()) {
             myDrive.update();
         }

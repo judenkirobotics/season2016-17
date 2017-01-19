@@ -25,6 +25,9 @@ public class JudenKiAutonomousBlue  extends LinearOpMode {
         DcMotor[] rightMotors = new DcMotor[]{robot.rightMotorFront, robot.rightMotorBack};
         Drive myDrive = new Drive(leftMotors, rightMotors);
         myDrive.setParams(12.5, 1.5, 79.5);  //need to change these later
+        // Send telemetry message to signify robot waiting;
+        telemetry.addData("Say",  "You My Jedi, May Hit Play");
+        telemetry.update();
         waitForStart();
         ShootTheBall particle = new ShootTheBall();
 
@@ -34,7 +37,7 @@ public class JudenKiAutonomousBlue  extends LinearOpMode {
         particle.setMotorStopDelay(151);
 
         //Move forward a small amount
-        myDrive.moveForward(8, -0.6);
+        myDrive.moveForward(4, -0.6);
         while ((myDrive.motorsRunning() == true) && opModeIsActive()) {
             myDrive.update();
         }
@@ -46,10 +49,16 @@ public class JudenKiAutonomousBlue  extends LinearOpMode {
         //Turn to roughly 35 degrees
         myDrive.driveMove(0, 0.3);
         currentHeading = robot.gyro.getHeading();
-        while ((currentHeading < 18) || (currentHeading > 24) && opModeIsActive()) {
+        while ((currentHeading < 25) || (currentHeading > 31) && opModeIsActive()) {
             currentHeading = robot.gyro.getHeading();
         }
         myDrive.allStop();
+
+        //Move forward a small amount
+        myDrive.moveForward(4, -0.6);
+        while ((myDrive.motorsRunning() == true) && opModeIsActive()) {
+            myDrive.update();
+        }
 
         //Shoot a particle
         particle.shoot(robot.catapultMotor, robot.touchCat, this);
@@ -111,6 +120,7 @@ public class JudenKiAutonomousBlue  extends LinearOpMode {
 
 
     }
+
 }
 
 
