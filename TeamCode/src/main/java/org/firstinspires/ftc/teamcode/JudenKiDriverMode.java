@@ -47,8 +47,7 @@ public class JudenKiDriverMode extends LinearOpMode {
 
 
         // Send telemetry message to signify robot waiting;
-        telemetry.addData("Drivers...", "START YOUR ENGINES!!!!!!!!!!" +
-                " ;)");    //
+        telemetry.addData("Say",  "Go Pikachu, I choose you!");
         telemetry.update();
 
 
@@ -119,7 +118,7 @@ public class JudenKiDriverMode extends LinearOpMode {
             telemetry.addData("left x",  "%.2f", gamepad1.left_stick_x);
             telemetry.addData("right x", "%.2f", gamepad1.right_stick_x);
             telemetry.addData("heading", robot.gyro.getHeading());
-/*            telemetry.addData("Bottom    Red   ", "%d", robot.colorTheBottom.red());
+/*          telemetry.addData("Bottom    Red   ", "%d", robot.colorTheBottom.red());
             telemetry.addData("Bottom    Green ", "%d", robot.colorTheBottom.green());
             telemetry.addData("Bottom    Blue  ", "%d", robot.colorTheBottom.blue());
             telemetry.addData("Side      Red   ", "%d", robot.colorTheSide.red());
@@ -149,23 +148,5 @@ public class JudenKiDriverMode extends LinearOpMode {
         period.reset();
     }
 
-    /*public void shootTheBall (DcMotor mot, TouchSensor touch)  {
-
-
-        mot.setPower(1.0);
-
-        //Wait some time for it to cycle past the touch sensor
-        double currentTime = System.currentTimeMillis();
-        while ((System.currentTimeMillis() - currentTime < 500) && opModeIsActive()) {
-            //Kill some time
-        }
-        mot.setPower(.40);
-        while ((touch.isPressed() != true) && opModeIsActive()) {
-            //kill some time
-        }
-        mot.setPower(0);
-
-
-    }*/
 
 }

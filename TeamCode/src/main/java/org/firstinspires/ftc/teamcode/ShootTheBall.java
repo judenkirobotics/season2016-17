@@ -41,6 +41,18 @@ public class ShootTheBall {
         mot.setPower(0);
     }
 
+    public void prime(DcMotor mot, TouchSensor touch, LinearOpMode myMode) {
+        double startPrime = System.currentTimeMillis();
+        while((touch.isPressed() != true)     &&
+              (myMode.opModeIsActive())       &&
+              (System.currentTimeMillis() - startPrime < 5000)) {
+            // drive the prime motor
+            mot.setPower(.50);
+        }
+        // TRUE, so stop motor
+        mot.setPower(0);
+    }
+
     public void setTouchDelay(int delayTime) {
         touchSensorDelay=delayTime;
     }

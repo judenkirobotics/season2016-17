@@ -1,3 +1,4 @@
+
 package org.firstinspires.ftc.teamcode;
 
 import android.os.SystemClock;
@@ -10,8 +11,8 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 /**
  * Created by judenki on 11/26/16.
  */
-@Autonomous(name="Juden-Ki Autonomous Blue", group="Juden-Ki")
-public class JudenKiAutonomousBlue  extends LinearOpMode {
+@Autonomous(name="Juden-Ki Shoot Only Red Autonomous", group="Juden-Ki")
+public class JudenKiRedAutonomousShootOnly  extends LinearOpMode {
     //Juden Ki Launching Robot
     JudenKiPlatform robot = new JudenKiPlatform();
 
@@ -21,14 +22,13 @@ public class JudenKiAutonomousBlue  extends LinearOpMode {
         int nextHeading;
 
         robot.init(hardwareMap);
-        DcMotor[] leftMotors = new DcMotor[]{robot.leftMotorFront, robot.leftMotorBack};
-        DcMotor[] rightMotors = new DcMotor[]{robot.rightMotorFront, robot.rightMotorBack};
+        DcMotor[] leftMotors = new DcMotor[]{ robot.leftMotorFront, robot.leftMotorBack };
+        DcMotor[] rightMotors = new DcMotor[]{ robot.rightMotorFront, robot.rightMotorBack};
         Drive myDrive = new Drive(leftMotors, rightMotors);
         myDrive.setParams(12.5, 1.5, 79.5);  //need to change these later
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Say",  "Beyblades, Beyblades Let It Rip!");
-        telemetry.update();
-        waitForStart();
+        telemetry.update();        waitForStart();
         ShootTheBall particle = new ShootTheBall();
 
         // Initialize catapult parameters
@@ -47,14 +47,14 @@ public class JudenKiAutonomousBlue  extends LinearOpMode {
         //telemetry.update();
         //SystemClock.sleep(2000);
         //Turn to roughly 35 degrees
-        myDrive.driveMove(0, 0.3);
+        myDrive.driveMove(0, -0.3);
         currentHeading = robot.gyro.getHeading();
-        while ((currentHeading < 25) || (currentHeading > 31) && opModeIsActive()) {
+        while ((currentHeading < 290) || (currentHeading > 305) && opModeIsActive()) {
             currentHeading = robot.gyro.getHeading();
         }
         myDrive.allStop();
 
-        //Move forward a small amount
+//Move forward a small amount
         myDrive.moveForward(4, -0.6);
         while ((myDrive.motorsRunning() == true) && opModeIsActive()) {
             myDrive.update();
@@ -74,30 +74,9 @@ public class JudenKiAutonomousBlue  extends LinearOpMode {
         particle.shoot(robot.catapultMotor, robot.touchCat, this);
 
 
-        //turn to roughly 45 degrees from initial heading
-        myDrive.driveMove(0, 0.3);
-        currentHeading = robot.gyro.getHeading();
-        while ((currentHeading < 37) || (currentHeading > 44) && opModeIsActive()) {
-            currentHeading = robot.gyro.getHeading();
-        }
-        myDrive.allStop();
-
-        //Move forward some
-        myDrive.moveForward(32, -0.6);
-        while ((myDrive.motorsRunning() == true) && opModeIsActive()) {
-            myDrive.update();
-        }
-
-        //take a break then move forward again
-        SystemClock.sleep(2000);
-        myDrive.moveForward(6, -0.6);
-        while ((myDrive.motorsRunning() == true) && opModeIsActive()) {
-            myDrive.update();
-        }
 
 
-
-        while (opModeIsActive()) {
+        while(opModeIsActive()) {
             idle();
         }
 
@@ -105,13 +84,13 @@ public class JudenKiAutonomousBlue  extends LinearOpMode {
 
     }
 
-    public int newHeading(int currentHeading, int turnHeading) {
+    public int newHeading (int currentHeading, int turnHeading) {
         int tempHeading;
 
         tempHeading = currentHeading + turnHeading;
 
         if (tempHeading > 360)
-            tempHeading = tempHeading - 360;
+            tempHeading = tempHeading -360;
 
         if (tempHeading < 0)
             tempHeading = tempHeading + 360;
@@ -121,9 +100,11 @@ public class JudenKiAutonomousBlue  extends LinearOpMode {
 
     }
 
+    void dataDump() {
+        telemetry.addData("heading", robot.gyro.getHeading());
+        telemetry.update();
+    }
 }
-
-
 
 
 

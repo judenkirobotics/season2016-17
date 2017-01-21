@@ -27,7 +27,8 @@ public class JudenKiAutonomousRed  extends LinearOpMode {
         Drive myDrive = new Drive(leftMotors, rightMotors);
         myDrive.setParams(12.5, 1.5, 79.5);  //need to change these later
         // Send telemetry message to signify robot waiting;
-        telemetry.addData("Say",  "You My Jedi, May Hit Play");
+
+                telemetry.addData("Say",  "Beyblades, Beyblades Let It Rip!");
         telemetry.update();        waitForStart();
         ShootTheBall particle = new ShootTheBall();
 

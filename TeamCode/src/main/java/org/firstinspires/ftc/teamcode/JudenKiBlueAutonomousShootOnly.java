@@ -10,8 +10,8 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 /**
  * Created by judenki on 11/26/16.
  */
-@Autonomous(name="Juden-Ki Autonomous Blue", group="Juden-Ki")
-public class JudenKiAutonomousBlue  extends LinearOpMode {
+@Autonomous(name="Juden-Ki Shoot Only Autonomous Blue", group="Juden-Ki")
+public class JudenKiBlueAutonomousShootOnly   extends LinearOpMode {
     //Juden Ki Launching Robot
     JudenKiPlatform robot = new JudenKiPlatform();
 
@@ -74,28 +74,6 @@ public class JudenKiAutonomousBlue  extends LinearOpMode {
         particle.shoot(robot.catapultMotor, robot.touchCat, this);
 
 
-        //turn to roughly 45 degrees from initial heading
-        myDrive.driveMove(0, 0.3);
-        currentHeading = robot.gyro.getHeading();
-        while ((currentHeading < 37) || (currentHeading > 44) && opModeIsActive()) {
-            currentHeading = robot.gyro.getHeading();
-        }
-        myDrive.allStop();
-
-        //Move forward some
-        myDrive.moveForward(32, -0.6);
-        while ((myDrive.motorsRunning() == true) && opModeIsActive()) {
-            myDrive.update();
-        }
-
-        //take a break then move forward again
-        SystemClock.sleep(2000);
-        myDrive.moveForward(6, -0.6);
-        while ((myDrive.motorsRunning() == true) && opModeIsActive()) {
-            myDrive.update();
-        }
-
-
 
         while (opModeIsActive()) {
             idle();
@@ -122,6 +100,7 @@ public class JudenKiAutonomousBlue  extends LinearOpMode {
     }
 
 }
+
 
 
 
