@@ -99,7 +99,7 @@ public class JudenKiDriverMode extends LinearOpMode {
             }
 
 
-
+            robot.gyro.resetZAxisIntegrator();
 
 
             //Ball loading motor control.   use triggers for fast loading, bumpers for slow loading

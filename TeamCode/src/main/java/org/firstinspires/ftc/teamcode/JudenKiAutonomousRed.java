@@ -28,8 +28,8 @@ public class JudenKiAutonomousRed  extends LinearOpMode {
         myDrive.setParams(12.5, 1.5, 79.5);  //need to change these later
         // Send telemetry message to signify robot waiting;
 
-                telemetry.addData("Say",  "Beyblades, Beyblades Let It Rip!");
-        telemetry.update();        waitForStart();
+        telemetry.addData("Say",  "Beyblades, Beyblades Let It Rip!");
+        telemetry.update();
         ShootTheBall particle = new ShootTheBall();
 
         // Initialize catapult parameters
@@ -37,71 +37,79 @@ public class JudenKiAutonomousRed  extends LinearOpMode {
         particle.setTouchDelay(500);
         particle.setMotorStopDelay(151);
 
-        //Move forward a small amount
-        myDrive.moveForward(4, -0.6);
-        while ((myDrive.motorsRunning() == true) && opModeIsActive()) {
-            myDrive.update();
-        }
-
-
-        //telemetry.addData("heading", robot.gyro.getHeading());
-        //telemetry.update();
-        //SystemClock.sleep(2000);
-        //Turn to roughly 35 degrees
-        myDrive.driveMove(0, -0.3);
-        currentHeading = robot.gyro.getHeading();
-        while ((currentHeading < 290) || (currentHeading > 305) && opModeIsActive()) {
-            currentHeading = robot.gyro.getHeading();
-        }
-        myDrive.allStop();
-
-//Move forward a small amount
-        myDrive.moveForward(4, -0.6);
-        while ((myDrive.motorsRunning() == true) && opModeIsActive()) {
-            myDrive.update();
-        }
-
-        //Shoot a particle
-        particle.shoot(robot.catapultMotor, robot.touchCat, this);
-
-        //Attempt to load second particle
-        robot.ballPickerMotor.setPower(.9);
-        SystemClock.sleep(2500);
-        robot.ballPickerMotor.setPower(-.9);
-        SystemClock.sleep(700);
-        robot.ballPickerMotor.setPower(0);
-
-        //Hopefully shoot second particle
-        particle.shoot(robot.catapultMotor, robot.touchCat, this);
-
-
-        //turn to roughly 45 degrees from initial heading
-        myDrive.driveMove(0, 0.3);
-        currentHeading = robot.gyro.getHeading();
-        while ((currentHeading < 310) || (currentHeading > 320) && opModeIsActive()) {
-            currentHeading = robot.gyro.getHeading();
-        }
-        myDrive.allStop();
-
-        //Move forward some
-        myDrive.moveForward(32, -0.6);
-        while ((myDrive.motorsRunning() == true) && opModeIsActive()) {
-            myDrive.update();
-        }
-
-        //take a break then move forward again
-        SystemClock.sleep(2000);
-        myDrive.moveForward(6, -0.6);
-        while ((myDrive.motorsRunning() == true) && opModeIsActive()) {
-            myDrive.update();
-        }
-
+        waitForStart();
 
         while(opModeIsActive()) {
+
+            //Move forward a small amount
+            myDrive.moveForward(4, -0.6);
+            while ((myDrive.motorsRunning() == true) && opModeIsActive()) {
+                myDrive.update();
+            }
+
+
+            //telemetry.addData("heading", robot.gyro.getHeading());
+            //telemetry.update();
+            //SystemClock.sleep(2000);
+            //Turn to roughly 35 degrees
+            myDrive.driveMove(0, -0.3);
+            currentHeading = robot.gyro.getHeading();
+            while ((currentHeading < 290) || (currentHeading > 305) && opModeIsActive()) {
+                currentHeading = robot.gyro.getHeading();
+            }
+            myDrive.allStop();
+
+    //Move forward a small amount
+            myDrive.moveForward(4, -0.6);
+            while ((myDrive.motorsRunning() == true) && opModeIsActive()) {
+                myDrive.update();
+            }
+
+            //Shoot a particle
+            if (opModeIsActive())
+                particle.shoot(robot.catapultMotor, robot.touchCat, this);
+
+            //Attempt to load second particle
+
+            robot.ballPickerMotor.setPower(.9);
+            safeSleep(2500);
+            robot.ballPickerMotor.setPower(-.9);
+            safeSleep(700);
+            robot.ballPickerMotor.setPower(0);
+
+            //Hopefully shoot second particle
+            if (opModeIsActive())
+                particle.shoot(robot.catapultMotor, robot.touchCat, this);
+
+
+            //turn to roughly 45 degrees from initial heading
+            myDrive.driveMove(0, 0.3);
+            currentHeading = robot.gyro.getHeading();
+            while ((currentHeading < 310) || (currentHeading > 320) && opModeIsActive()) {
+                currentHeading = robot.gyro.getHeading();
+            }
+            myDrive.allStop();
+
+            //Move forward some
+            myDrive.moveForward(32, -0.6);
+            while ((myDrive.motorsRunning() == true) && opModeIsActive()) {
+                myDrive.update();
+            }
+
+            //take a break then move forward again
+            safeSleep(2000);
+            myDrive.moveForward(6, -0.6);
+            while ((myDrive.motorsRunning() == true) && opModeIsActive()) {
+                myDrive.update();
+            }
+
+
+
             idle();
         }
 
         myDrive.allStop();
+        robot.catapultMotor.setPower(0);
 
     }
 
@@ -124,6 +132,13 @@ public class JudenKiAutonomousRed  extends LinearOpMode {
     void dataDump() {
         telemetry.addData("heading", robot.gyro.getHeading());
         telemetry.update();
+    }
+
+    public void safeSleep (long duration) {
+        long currentTime = System.currentTimeMillis();
+        while ((System.currentTimeMillis() - duration < currentTime) && opModeIsActive()) {
+            //Kill some time
+        }
     }
 }
 

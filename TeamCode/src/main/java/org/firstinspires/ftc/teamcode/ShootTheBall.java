@@ -38,6 +38,7 @@ public class ShootTheBall {
         }
         currentTime = System.currentTimeMillis();
         while((System.currentTimeMillis() - currentTime < motorStopDelay) && myMode.opModeIsActive())
+
         mot.setPower(0);
     }
 
