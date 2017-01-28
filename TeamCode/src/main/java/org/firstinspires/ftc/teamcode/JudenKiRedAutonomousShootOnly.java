@@ -31,6 +31,8 @@ public class JudenKiRedAutonomousShootOnly  extends LinearOpMode {
         telemetry.update();        waitForStart();
         ShootTheBall particle = new ShootTheBall();
 
+        while(opModeIsActive()) {
+
         // Initialize catapult parameters
         particle.setAbortDelay(2000);
         particle.setTouchDelay(500);
@@ -65,9 +67,9 @@ public class JudenKiRedAutonomousShootOnly  extends LinearOpMode {
 
         //Attempt to load second particle
         robot.ballPickerMotor.setPower(.9);
-        SystemClock.sleep(2500);
+        safeSleep(2500);
         robot.ballPickerMotor.setPower(-.9);
-        SystemClock.sleep(700);
+        safeSleep(700);
         robot.ballPickerMotor.setPower(0);
 
         //Hopefully shoot second particle
@@ -76,7 +78,7 @@ public class JudenKiRedAutonomousShootOnly  extends LinearOpMode {
 
 
 
-        while(opModeIsActive()) {
+
             idle();
         }
 
@@ -103,6 +105,12 @@ public class JudenKiRedAutonomousShootOnly  extends LinearOpMode {
     void dataDump() {
         telemetry.addData("heading", robot.gyro.getHeading());
         telemetry.update();
+    }
+    public void safeSleep (long duration) {
+        long currentTime = System.currentTimeMillis();
+        while ((System.currentTimeMillis() - duration < currentTime) && opModeIsActive()) {
+            //Kill some time
+        }
     }
 }
 

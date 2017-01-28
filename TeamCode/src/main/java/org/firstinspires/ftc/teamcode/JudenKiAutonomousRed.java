@@ -54,7 +54,7 @@ public class JudenKiAutonomousRed  extends LinearOpMode {
             //Turn to roughly 35 degrees
             myDrive.driveMove(0, -0.3);
             currentHeading = robot.gyro.getHeading();
-            while ((currentHeading < 290) || (currentHeading > 305) && opModeIsActive()) {
+            while (((currentHeading < 290) || (currentHeading > 305)) && opModeIsActive()) {
                 currentHeading = robot.gyro.getHeading();
             }
             myDrive.allStop();
@@ -85,7 +85,7 @@ public class JudenKiAutonomousRed  extends LinearOpMode {
             //turn to roughly 45 degrees from initial heading
             myDrive.driveMove(0, 0.3);
             currentHeading = robot.gyro.getHeading();
-            while ((currentHeading < 310) || (currentHeading > 320) && opModeIsActive()) {
+            while (((currentHeading < 310) || (currentHeading > 320)) && opModeIsActive()) {
                 currentHeading = robot.gyro.getHeading();
             }
             myDrive.allStop();
@@ -103,7 +103,7 @@ public class JudenKiAutonomousRed  extends LinearOpMode {
                 myDrive.update();
             }
 
-
+            //robot.allStop();
 
             idle();
         }

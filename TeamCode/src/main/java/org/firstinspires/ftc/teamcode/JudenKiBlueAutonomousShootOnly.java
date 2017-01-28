@@ -65,9 +65,9 @@ public class JudenKiBlueAutonomousShootOnly   extends LinearOpMode {
 
         //Attempt to load second particle
         robot.ballPickerMotor.setPower(.9);
-        SystemClock.sleep(2500);
+        safeSleep(2500);
         robot.ballPickerMotor.setPower(-.9);
-        SystemClock.sleep(700);
+        safeSleep(700);
         robot.ballPickerMotor.setPower(0);
 
         //Hopefully shoot second particle
@@ -99,6 +99,12 @@ public class JudenKiBlueAutonomousShootOnly   extends LinearOpMode {
 
     }
 
+    public void safeSleep (long duration) {
+        long currentTime = System.currentTimeMillis();
+        while ((System.currentTimeMillis() - duration < currentTime) && opModeIsActive()) {
+            //Kill some time
+        }
+    }
 }
 
 
