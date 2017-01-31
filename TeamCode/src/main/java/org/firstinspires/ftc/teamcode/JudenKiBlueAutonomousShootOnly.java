@@ -75,11 +75,14 @@ public class JudenKiBlueAutonomousShootOnly   extends LinearOpMode {
 
 
 
-        while (opModeIsActive()) {
+        //robot.allStop();
+        myDrive.allStop();
+        robot.catapultMotor.setPower(0);
+        robot.ballPickerMotor.setPower(0);
+
+        while(opModeIsActive()) {
             idle();
         }
-
-        myDrive.allStop();
 
     }
 

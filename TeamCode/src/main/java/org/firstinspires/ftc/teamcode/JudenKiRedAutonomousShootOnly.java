@@ -79,10 +79,17 @@ public class JudenKiRedAutonomousShootOnly  extends LinearOpMode {
 
 
 
-            idle();
+            //robot.allStop();
+            myDrive.allStop();
+            robot.catapultMotor.setPower(0);
+            robot.ballPickerMotor.setPower(0);
+
+            while(opModeIsActive()) {
+                idle();
+            }
         }
 
-        myDrive.allStop();
+
 
     }
 

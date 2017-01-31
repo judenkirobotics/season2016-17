@@ -54,7 +54,7 @@ public class JudenKiDriverMode extends LinearOpMode {
         //Initialize the catapult parameters
         particle.setTouchDelay(500);
         particle.setAbortDelay(2000);
-        particle.setMotorStopDelay(151);
+        particle.setMotorStopDelay(251);
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
@@ -103,10 +103,16 @@ public class JudenKiDriverMode extends LinearOpMode {
 
 
             //Ball loading motor control.   use triggers for fast loading, bumpers for slow loading
-            if ((gamepad1.right_trigger > 0.1) && (gamepad1.left_trigger < 0.1))
+            if ((gamepad1.right_trigger > 0.1) && (gamepad1.left_trigger < 0.1)) {
                 robot.ballPickerMotor.setPower(.9);
-            else if ((gamepad1.left_trigger > 0.1) && (gamepad1.right_trigger < 0.1))
+                robot.wisker1.setPower(.9);
+                robot.wisker2.setPower(-.9);
+            }
+            else if ((gamepad1.left_trigger > 0.1) && (gamepad1.right_trigger < 0.1)) {
                 robot.ballPickerMotor.setPower(-0.9);
+                robot.wisker1.setPower(-.9);
+                robot.wisker2.setPower(.9);
+            }
             else if (gamepad1.right_bumper)
                 robot.ballPickerMotor.setPower(.2);
             else if (gamepad1.left_bumper)

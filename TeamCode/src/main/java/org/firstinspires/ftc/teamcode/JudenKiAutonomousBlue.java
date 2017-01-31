@@ -87,26 +87,30 @@ public class JudenKiAutonomousBlue  extends LinearOpMode {
             myDrive.allStop();
 
             //Move forward some
-            myDrive.moveForward(32, -0.6);
+            myDrive.moveForward(16, -0.6);
             while ((myDrive.motorsRunning() == true) && opModeIsActive()) {
                 myDrive.update();
             }
 
             //take a break then move forward again
             safeSleep(2000, this);
-            myDrive.moveForward(6, -0.6);
+            myDrive.moveForward(3, -0.6);
             while ((myDrive.motorsRunning() == true) && opModeIsActive()) {
                 myDrive.update();
             }
 
             //robot.allStop();
+            myDrive.allStop();
+            robot.catapultMotor.setPower(0);
+            robot.ballPickerMotor.setPower(0);
 
-            idle();
+            while(opModeIsActive()) {
+                idle();
+            }
+
         }
 
-        myDrive.allStop();
-        robot.catapultMotor.setPower(0);
-        robot.ballPickerMotor.setPower(0);
+
 
     }
 

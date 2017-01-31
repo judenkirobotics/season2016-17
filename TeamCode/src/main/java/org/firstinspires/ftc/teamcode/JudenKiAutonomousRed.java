@@ -35,7 +35,7 @@ public class JudenKiAutonomousRed  extends LinearOpMode {
         // Initialize catapult parameters
         particle.setAbortDelay(2000);
         particle.setTouchDelay(500);
-        particle.setMotorStopDelay(151);
+        particle.setMotorStopDelay(250);
 
         waitForStart();
 
@@ -85,31 +85,34 @@ public class JudenKiAutonomousRed  extends LinearOpMode {
             //turn to roughly 45 degrees from initial heading
             myDrive.driveMove(0, 0.3);
             currentHeading = robot.gyro.getHeading();
-            while (((currentHeading < 310) || (currentHeading > 320)) && opModeIsActive()) {
+            while (((currentHeading < 320) || (currentHeading > 330)) && opModeIsActive()) {
                 currentHeading = robot.gyro.getHeading();
             }
             myDrive.allStop();
 
             //Move forward some
-            myDrive.moveForward(32, -0.6);
+            myDrive.moveForward(16, -0.6);
             while ((myDrive.motorsRunning() == true) && opModeIsActive()) {
                 myDrive.update();
             }
 
             //take a break then move forward again
             safeSleep(2000);
-            myDrive.moveForward(6, -0.6);
+            myDrive.moveForward(3, -0.6);
             while ((myDrive.motorsRunning() == true) && opModeIsActive()) {
                 myDrive.update();
             }
 
             //robot.allStop();
+            myDrive.allStop();
+            robot.catapultMotor.setPower(0);
+            robot.ballPickerMotor.setPower(0);
 
-            idle();
+            while(opModeIsActive()) {
+                idle();
+            }
         }
 
-        myDrive.allStop();
-        robot.catapultMotor.setPower(0);
 
     }
 

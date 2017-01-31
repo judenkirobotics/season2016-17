@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.GyroSensor;
 import com.qualcomm.robotcore.hardware.HardwareDevice;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -27,7 +29,8 @@ public class JudenKiPlatform {
     public TouchSensor touchCat     = null;
     public Servo beaconServo = null;
     public DcMotor  ballPickerMotor = null;
-
+    public CRServo wisker1 = null;
+    public CRServo wisker2 = null;
 
     // For unknown reasons must convert the 8-bit address programmed by the MR tool to a
     // 7-bit address.  This is effectively a divide by two.
@@ -59,12 +62,9 @@ public class JudenKiPlatform {
         colorTheBottom.setI2cAddress(I2cAddr.create7bit(COLOR_SENSOR_BOTTOM_ADDRESS));
         colorTheBottom.enableLed(true);
 */
+        wisker1 = ahwMap.crservo.get("Wiskers1");
+        wisker2 = ahwMap.crservo.get("Wiskers2");
 
-        // Button servo
-        beaconServo = ahwMap.servo.get("Beacon servo");
-        beaconServo.scaleRange(0, 1);
-        beaconServo.setDirection(Servo.Direction.FORWARD);
-        beaconServo.setPosition(.35);
 
         //Gyro Sensor
         gyro = ahwMap.gyroSensor.get("gyro");
