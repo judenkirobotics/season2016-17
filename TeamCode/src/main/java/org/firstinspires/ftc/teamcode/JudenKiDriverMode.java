@@ -54,7 +54,7 @@ public class JudenKiDriverMode extends LinearOpMode {
         //Initialize the catapult parameters
         particle.setTouchDelay(500);
         particle.setAbortDelay(2000);
-        particle.setMotorStopDelay(251);
+        particle.setMotorStopDelay(351);
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
