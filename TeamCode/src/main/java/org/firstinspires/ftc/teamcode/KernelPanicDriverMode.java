@@ -2,8 +2,12 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 
@@ -20,12 +24,38 @@ public class KernelPanicDriverMode extends LinearOpMode {
     KernelPanicPlatform robot = new KernelPanicPlatform();
     //public HardwareMap hardwareMap = null; // will be set in OpModeManager.runActiveOpMode
     double continuous = 0.00;
+    double prevLeftY = 0.0;
+    double prevLeftX = 0.0;
+    
+/************************************************************************/
+/*                     filter_input                                     */
+/*      Read the inputs, post process them, and produce the             */
+/*      output Motor Drive commands                                     */
+/*   Inputs: stick position, previous stick position                    */
+/*   Outputs: (return value)                                            */
+/*   Returns:  Filtered stick position                                  */
+/************************************************************************/
+    public static double filter_input(double instick, double prevStickPos) {
+        double filter_constant = 0;  /*init to zero just in case */
+        /* cube the input stick to give better response around zero */
+        instick = instick * instick * instick;
+
+        if (prevStickPos > 0.85) {
+            filter_constant = 0.35;
+        } else if (prevStickPos > 0.6) {
+            filter_constant = 0.45;
+        } else if (prevStickPos > 0.4) {
+            filter_constant = 0.65;
+        }
+        prevStickPos = ((1 - filter_constant) * instick) + (filter_constant * prevStickPos);
+        return (prevStickPos);
+    }
 
 
-    @Override
     public void runOpMode() throws InterruptedException {
         double forward;
         double drift;
+        boolean triggerPressed = false;
 
         /* Initialize the hardware variables.
          * The init() method of the hardware class does all the work here
@@ -54,33 +84,79 @@ public class KernelPanicDriverMode extends LinearOpMode {
             //left = -gamepad1.left_stick_y;
             //myDrive.moveForward(12, left);
             //myDrive.drift(gamepad1.left_stick_x);
-            forward = -gamepad1.left_stick_y;
-
+            forward = filter_input(-gamepad1.left_stick_y, prevLeftY);
+            prevLeftY = forward;
             //Smooth movement but still ends up being more of a pivot than a drift
             //drift = gamepad1.left_stick_x * gamepad1.left_stick_x * gamepad1.left_stick_x * gamepad1.left_stick_x * gamepad1.left_stick_x;
 
             //Try limiting it to 25% of total power
             if (forward < .25) {
-                drift = gamepad1.left_stick_x;
+                drift = filter_input(gamepad1.left_stick_x, prevLeftX);
             }
             else {
                 drift = gamepad1.left_stick_x * 0.25;
             }
+            prevLeftX = drift;
             myDrive.driveMove(forward, drift);
 
             // Actuate the servos.
             if (gamepad1.a) {
-                robot.frontServo.setPosition(robot.frontServo.getPosition()+10);
+                robot.frontServo.setDirection(CRServo.Direction.FORWARD);
+                robot.frontServo.setPower(robot.SERVO_EXTEND_POWER);
             }
-            if (gamepad1.b) {
-                robot.frontServo.setPosition(robot.frontServo.getPosition()-10);
+            else if (gamepad1.b) {
+                robot.frontServo.setDirection(CRServo.Direction.REVERSE);
+                robot.frontServo.setPower(robot.SERVO_RETRACT_POWER);
             }
+            else
+                robot.frontServo.setPower(robot.SERVO_STOP_POWER);
+
+
             if (gamepad1.x) {
-                robot.backServo.setPosition(robot.backServo.getPosition()+10);
+                robot.backServo.setDirection(CRServo.Direction.FORWARD);
+                robot.backServo.setPower(robot.SERVO_EXTEND_POWER);
             }
-            if (gamepad1.y) {
-                robot.backServo.setPosition(robot.backServo.getPosition()-10);
+            else if (gamepad1.y) {
+                robot.backServo.setDirection(CRServo.Direction.REVERSE);
+                robot.backServo.setPower(robot.SERVO_RETRACT_POWER);
             }
+            else
+                robot.backServo.setPower(robot.SERVO_STOP_POWER);
+
+            if(gamepad1.right_bumper && triggerPressed) {
+                robot.ballLiftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+                robot.ballLiftMotor.setPower(1);
+            }
+            else if(gamepad1.left_bumper && triggerPressed) {
+                robot.ballLiftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+                robot.ballLiftMotor.setPower(1);
+            }
+            else {
+                robot.ballLiftMotor.setPower(0);
+            }
+
+
+            if(gamepad1.right_trigger != 0.0)  {
+                robot.liftServoLeft.setDirection(Servo.Direction.FORWARD);
+                robot.liftServoLeft.setPosition(1);
+                robot.liftServoRight.setDirection(Servo.Direction.FORWARD);
+                robot.liftServoRight.setPosition(0);
+                triggerPressed = false;
+                telemetry.addData("Open the ARMS",1);
+            }
+            else if(gamepad1.left_trigger != 0.0) {
+                robot.liftServoLeft.setDirection(Servo.Direction.FORWARD);
+                robot.liftServoLeft.setPosition(0);
+                robot.liftServoRight.setDirection(Servo.Direction.FORWARD);
+                robot.liftServoRight.setPosition(1);
+                triggerPressed = true;
+                telemetry.addData("Close the ARMS", 1);
+            }
+
+
+
+
+
 
 
 
@@ -97,7 +173,8 @@ public class KernelPanicDriverMode extends LinearOpMode {
             telemetry.addData("Side      Red   ", "%d", robot.colorSide.red());
             telemetry.addData("Side      Green ", "%d", robot.colorSide.green());
             telemetry.addData("Side      Blue  ", "%d", robot.colorSide.blue());
-          //  telemetry.addData("Range   ", robot.rangeReader.getReadWindow());
+            //telemetry.addData("Voltage", "%d", robot.voltageSensor.getVoltage());
+            //  telemetry.addData("Range   ", robot.rangeReader.getReadWindow());
 
 
 
@@ -107,7 +184,7 @@ public class KernelPanicDriverMode extends LinearOpMode {
 
 
             // Pause for metronome tick.  40 mS each cycle = update 25 times a second.
-            waitForTick(40);
+            //waitForTick(40);
             idle(); // Always call idle() at the bottom of your while(opModeIsActive()) loop
         }
     }
