@@ -1,8 +1,10 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import android.os.SystemClock;
-
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.GyroSensor;
 
 /**
  * Created by judenki on 11/12/16.
@@ -19,16 +21,27 @@ import com.qualcomm.robotcore.hardware.DcMotor;
  */
 
 public class Drive {
-
+    public static int prevHeading = 176;
+    public static int newHeading = 178;
     private DcMotor[] leftMotors   = null;
     private DcMotor[] rightMotors  = null;
 
     private double MIN_DRIVE_DISTANCE = 0.0;
     private double MAX_DRIVE_DISTANCE = 120.0;
 
-    private double FORWARD_POWER =  0.8;
-    private double REVERSE_POWER = -0.8;
-    private double TURN_POWER    =  0.4;
+    private double FAST_POWER          = 0.6;
+    private double SLOW_POWER          = 0.3;
+    private double CORRECTION_POWER    = 0.15;
+    private double RIGHT_SIGN          = 1;
+    private double LEFT_SIGN           =-1;
+    public static boolean RIGHT_TURN   = true;
+    public static boolean LEFT_TURN    = false;
+    private GyroSensor driveGyro       = null;
+    private LinearOpMode myMode        = null;
+
+
+
+
 
     private double WHEEL_CIRC    = 13;
     private double WHEEL_RPM     = 2;   //Misnamed, fix should be RPS second not minute
@@ -36,8 +49,13 @@ public class Drive {
     private double TURN_PER_SECOND = 79.5;
 
     private long driveStopTime  = 0;
-
+    private long turnStartTime = 0;
+    private long turnTotalTime = 0;
+    final private double powerTable[] = {
+          0.0,  0.2, 0.3, 0.35, 0.4, 0.45, 0.48, 0.5, 0.55, 0.6
+    };
     private boolean motorsStopped = true;
+
 
 
     // Left and right are with respect to the robot
@@ -51,12 +69,13 @@ public class Drive {
         // Set all DC Motors to run without encoders
         for( DcMotor dcm : leftMotors ) {
             dcm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            //dcm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
         for (DcMotor dcm : rightMotors){
             dcm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            //dcm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
     }
-
 
 
     public void turn(double degrees, double power) {
@@ -130,8 +149,6 @@ public class Drive {
         //Calculate how long to move.
         time =  moveTime(moveDistance, WHEEL_RPM, WHEEL_CIRC);
 
-        //leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        //rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         for (DcMotor dcm : leftMotors){
             dcm.setPower( - power);
         }
@@ -139,21 +156,259 @@ public class Drive {
             dcm.setPower( power);
         }
 
-        //SystemClock.sleep((long)(double)time);
-        //SystemClock.sleep((long)(double)time);
         driveStopTime = time + SystemClock.elapsedRealtime();
         motorsStopped = false;
 
-        /*
-        for(DcMotor dcm : leftMotors) {
-            dcm.setPower(0.0);
-        }
-        for(DcMotor dcm : rightMotors) {
-            dcm.setPower(0.0);
-        }
-        */
 
     }
+
+    /*
+     *  Make a method to consolidate all of the different gyro based turns the students have come up with.
+     *  Accept the new absolute heading and direction of turn.   Initialization routine must be called
+     *  first to set parameters fastPower, slowPower, correctionPower, rightSign, leftSign.
+     */
+    public void gyroTurn3(int newHeading, int clockwise){
+        int currHeading = driveGyro.getHeading();
+        int accumTurn = 0;
+        long turnSegmentTime = 0;
+        long segStartTime = 0;
+        double turnRate = 0;
+        int segDegrees;
+        int cw = (clockwise < 0) ? -1 : 1;
+        int transit = (((currHeading > newHeading) && (cw > 0)) ||
+                       ((currHeading < newHeading) && (cw < 0))) ?  360 : 0;
+        int desiredRotation = Math.abs(transit + (cw*newHeading) + ((-1*cw)*currHeading));
+        desiredRotation = (desiredRotation > 360) ? desiredRotation - 360 : desiredRotation;
+        prevHeading = currHeading;
+        turnStartTime = System.currentTimeMillis();
+        turnTotalTime = 0;
+        segStartTime = turnStartTime;
+        int startSegDegrees = accumTurn;
+        double ratePowerAdjust = 0;
+        int pwrIdx = Math.abs(clockwise)/10;
+        //double powerLevel = powerTable[pwrIdx];  // if we feel gutsy can use a lookup.
+        double powerLevel = 0.3; // as good a place as any to start
+        //myMode.telemetry.addData("Power LEvel ", "%f", powerLevelTest);
+        //myMode.telemetry.update();
+        //SystemClock.sleep(4000);
+
+        while((accumTurn < desiredRotation) &&
+              (clockwise != 0)              &&
+              (turnTotalTime < 30000)       &&
+              (myMode.opModeIsActive()))      {
+            long currTime = System.currentTimeMillis();
+            turnTotalTime = currTime - turnStartTime;
+            turnSegmentTime = currTime - segStartTime;
+            segDegrees = accumTurn - startSegDegrees;
+
+            if (turnSegmentTime > 120) {
+                startSegDegrees = accumTurn;
+                segStartTime = currTime;
+                turnRate = 1000.0 * (double)segDegrees / (double)turnSegmentTime;
+                if ((turnRate > 10.0) && (desiredRotation - accumTurn) <= 15){
+                    ratePowerAdjust = ratePowerAdjust - 0.05;
+                }
+                else if (turnRate < Math.abs(clockwise)) {
+                    ratePowerAdjust = ratePowerAdjust + 0.05;
+                }
+            }
+            double turnDir = (clockwise > 0) ? RIGHT_SIGN : LEFT_SIGN;
+            //double powerLevel = (double)(Math.abs((double)clockwise)/100.0);
+            //double powerLevel = ((desiredRotation - accumTurn) > 15) ? FAST_POWER : SLOW_POWER;
+            //powerLevel = ((desiredRotation - accumTurn) > 3) ? powerLevel : CORRECTION_POWER;
+            powerLevel = powerLevel + ratePowerAdjust;
+            driveMove(0, turnDir * powerLevel);
+            //numberSteps[leg]++;
+            currHeading = driveGyro.getHeading();
+            if (Math.abs(prevHeading - currHeading) > 350) {
+                if (prevHeading < currHeading) {
+                    accumTurn += prevHeading + 360 - currHeading;
+                }
+                else {
+                    accumTurn += currHeading + 360 - prevHeading;
+                }
+            }
+            else {
+                accumTurn += Math.abs(prevHeading - currHeading);
+            }
+            prevHeading = currHeading;
+        }
+        driveMove(0,0);
+    }
+
+
+    public void gyroTurn2(int newHeading, int clockwise){
+        int currHeading = driveGyro.getHeading();
+        int accumTurn = 0;
+        int cw = (clockwise < 0) ? -1 : 1;
+        int transit = (((currHeading > newHeading) && (cw > 0)) ||
+                ((currHeading < newHeading) && (cw < 0))) ?  360 : 0;
+        int desiredRotation = Math.abs(transit + (cw*newHeading) + ((-1*cw)*currHeading));
+        desiredRotation = (desiredRotation > 360) ? desiredRotation - 360 : desiredRotation;
+        prevHeading = currHeading;
+
+        while((accumTurn < desiredRotation) &&
+                (clockwise != 0) &&
+                (myMode.opModeIsActive())){
+            double turnDir = (clockwise > 0) ? RIGHT_SIGN : LEFT_SIGN;
+            double powerLevel = ((desiredRotation - accumTurn) > 15) ? FAST_POWER : SLOW_POWER;
+            powerLevel = ((desiredRotation - accumTurn) > 3) ? powerLevel : CORRECTION_POWER;
+            driveMove(0, turnDir * powerLevel);
+            //numberSteps[leg]++;
+            currHeading = driveGyro.getHeading();
+            if (Math.abs(prevHeading - currHeading) > 350) {
+                if (prevHeading < currHeading) {
+                    accumTurn += prevHeading + 360 - currHeading;
+                }
+                else {
+                    accumTurn += currHeading + 360 - prevHeading;
+                }
+            }
+            else {
+                accumTurn += Math.abs(prevHeading - currHeading);
+            }
+            prevHeading = currHeading;
+        }
+        driveMove(0,0);
+    }
+    public void gyroTurn(int newHeading, boolean direction) {
+
+        /*
+         * Four cases to consider.  First determine if new Heading is greater or less than current heading.
+         * Then determine if they turn right or left to reach new heading.
+         */
+
+
+        if (newHeading > driveGyro.getHeading()) {
+            if (direction == RIGHT_TURN) {
+                driveMove(0,RIGHT_SIGN*FAST_POWER);
+                while ((newHeading - driveGyro.getHeading()>20) && myMode.opModeIsActive()) {
+                    // Add time based check to keep loop from getting stuck
+                }
+                driveMove(0,RIGHT_SIGN*SLOW_POWER);
+                while ((newHeading - driveGyro.getHeading()>0) && myMode.opModeIsActive()) {
+                    // Add time based check to keep loop from getting stuck
+                }
+                driveMove(0,0);
+                if (newHeading - driveGyro.getHeading() < 0) {
+                    driveMove(0,LEFT_SIGN*CORRECTION_POWER);
+                    while ((newHeading - driveGyro.getHeading() < 0) && myMode.opModeIsActive()) {
+                        // Add time based check to keep loop from getting stuck
+                    }
+                }
+
+                driveMove(0,0);
+
+            }
+            // Turn left to reach new heading must handle crossing zero
+            else {
+                if (driveGyro.getHeading() > 0) {
+                    //Pass zero to get to a positive heading number
+                    driveMove(0,LEFT_SIGN*FAST_POWER);
+                    while((driveGyro.getHeading() > 10) && myMode.opModeIsActive()) {
+                        // Add time based check to keep loop from getting stuck
+                    }
+                    driveMove(0,LEFT_SIGN*SLOW_POWER);
+                    while((driveGyro.getHeading() > 0) && myMode.opModeIsActive()) {
+                        // Add time based check to keep loop from getting stuck
+                    }
+                }
+                else {
+                    driveMove(0,LEFT_SIGN*SLOW_POWER);
+                    while((driveGyro.getHeading() < 10) && myMode.opModeIsActive()) {
+                        // Add time based check to keep loop from getting stuck
+                    }
+                }
+
+                //Now that past zero keep turning to new heading
+                driveMove(0,LEFT_SIGN*FAST_POWER);
+                while ((driveGyro.getHeading() > newHeading+10) && myMode.opModeIsActive()) {
+                    // Add time based check to keep loop from getting stuck
+                }
+                driveMove(0,LEFT_SIGN*SLOW_POWER);
+                while ((driveGyro.getHeading() > newHeading) && myMode.opModeIsActive()) {
+                    // Add time based check to keep loop from getting stuck
+                }
+                if (driveGyro.getHeading() - newHeading < 0) {
+                    driveMove(0,RIGHT_SIGN*CORRECTION_POWER);
+                    while ((driveGyro.getHeading() - newHeading < 0) && myMode.opModeIsActive()) {
+                        // Add time based check to keep loop from getting stuck
+                    }
+                }
+                driveMove(0,0);
+
+            }
+
+        }
+
+
+        // New heading is less than current heading
+        else {
+            if (direction == RIGHT_TURN) {
+                //Handle crossing zero
+                driveMove(0,RIGHT_SIGN*FAST_POWER);
+                while ((driveGyro.getHeading() < 350) && myMode.opModeIsActive()) {
+                    // Add time based check to keep loop from getting stuck
+                }
+                driveMove(0,RIGHT_SIGN*SLOW_POWER);
+                while ((driveGyro.getHeading() > 10) && myMode.opModeIsActive()) {
+                    // Add time based check to keep loop from getting stuck
+                }
+                driveMove(0,0);
+
+                // Turn to new heading
+                driveMove(0,RIGHT_SIGN*FAST_POWER);
+                while ((newHeading - driveGyro.getHeading() > 10) && myMode.opModeIsActive()) {
+                    // Add time based check to keep loop from getting stuck
+                }
+                driveMove(0,RIGHT_SIGN*SLOW_POWER);
+                while ((newHeading - driveGyro.getHeading() > 0) && myMode.opModeIsActive()) {
+                    // Add time based check to keep loop from getting stuck
+                }
+                if (newHeading - driveGyro.getHeading() < 0) {
+                    driveMove(0,LEFT_SIGN*CORRECTION_POWER);
+                    while ((newHeading - driveGyro.getHeading() < 0) && myMode.opModeIsActive()) {
+                        // Add time based check to keep loop from getting stuck
+                    }
+                }
+                driveMove(0,0);
+
+            }
+            // Turn left to reach new heading
+            else {
+                driveMove(0,LEFT_SIGN*FAST_POWER);
+                while ((driveGyro.getHeading() - newHeading > 10) && myMode.opModeIsActive()) {
+                    // Add time based check to keep loop from getting stuck
+                }
+                driveMove(0,LEFT_SIGN*SLOW_POWER);
+                while ((driveGyro.getHeading() - newHeading > 00)  && myMode.opModeIsActive()){
+                    // Add time based check to keep loop from getting stuck
+                }
+                driveMove(0,0);
+                if (driveGyro.getHeading() - newHeading < 0) {
+                    driveMove(0,RIGHT_SIGN*CORRECTION_POWER);
+                    while ((driveGyro.getHeading() - newHeading < 0) && myMode.opModeIsActive()) {
+                        // Add time based check to keep loop from getting stuck
+                    }
+                }
+                driveMove(0,0);
+            }
+
+        }
+    }
+
+    /***********************************************************
+     **          calculate necessary turn amount              **
+     **********************************************************/
+    public static int getNeededTurn(int isNow, int want, int cw) {
+        cw = (cw < 0) ? -1 : 1;
+        int transit = (((isNow > want) && (cw > 0)) ||
+                ((isNow < want) && (cw < 0))) ?  360 : 0;
+        int neededTurn = Math.abs(transit + (cw*want) + ((-1*cw)*isNow));
+        neededTurn = (neededTurn > 360) ? neededTurn - 360 : neededTurn;
+        return (neededTurn);
+    }
+
 
 
     public void update() {
@@ -183,10 +438,22 @@ public class Drive {
         motorsStopped = true;
     }
 
-    public void setParams(double wheelCirc, double wheelRPM, double turnPerSecond) {
+    public void setParams(double wheelCirc, double wheelRPM, double turnPerSecond,
+                          double fastPower, double slowPower, double correctionPower,
+                          double rightSign, double leftSign, GyroSensor gyro,
+                          LinearOpMode operationMode) {
         WHEEL_CIRC = wheelCirc;
         WHEEL_RPM = wheelRPM;
         TURN_PER_SECOND = turnPerSecond;
+        FAST_POWER          = fastPower;
+        SLOW_POWER          = slowPower;
+        CORRECTION_POWER    = correctionPower;
+        RIGHT_SIGN          = rightSign;
+        LEFT_SIGN           = leftSign;
+        driveGyro           = gyro;
+        myMode = operationMode;
+
+
     }
 
 
