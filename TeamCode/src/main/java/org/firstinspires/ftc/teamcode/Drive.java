@@ -239,6 +239,92 @@ public class Drive {
      *  Accept the new absolute heading and direction of turn.   Initialization routine must be called
      *  first to set parameters fastPower, slowPower, correctionPower, rightSign, leftSign.
      */
+    public void gyroTurn3B(int newHeading, int clockwise){
+        int currHeading = driveGyro.getHeading();
+        int accumTurn = 0;
+        long turnSegmentTime = 0;
+        long segStartTime = 0;
+        double turnRate = 0;
+        double powerAdjustAmount = 0.05;
+
+        int segDegrees = 0;
+        int cw = (clockwise < 0) ? -1 : 1;
+        int transit = (((currHeading > newHeading) && (cw > 0)) ||
+                ((currHeading < newHeading) && (cw < 0))) ?  360 : 0;
+        int desiredRotation = Math.abs(transit + (cw*newHeading) + ((-1*cw)*currHeading));
+        desiredRotation = (desiredRotation > 360) ? desiredRotation - 360 : desiredRotation;
+        prevHeading = currHeading;
+        turnStartTime = System.currentTimeMillis();
+        turnTotalTime = 0;
+        segStartTime = turnStartTime;
+        int startSegDegrees = accumTurn;
+        double ratePowerAdjust = 0;
+        double powerLevel = 0.20; // as good a place as any to start
+        int upCount=0;
+        int downCount=0;
+
+
+        while((accumTurn < desiredRotation) &&
+                (clockwise != 0)              &&
+                (turnTotalTime < 30000)       &&
+                (myMode.opModeIsActive()))      {
+
+            long currTime = System.currentTimeMillis();
+            turnTotalTime = currTime - turnStartTime;
+            turnSegmentTime = currTime - segStartTime;
+            segDegrees = accumTurn - startSegDegrees;
+
+
+            if (turnSegmentTime > 250) {
+                startSegDegrees = accumTurn;
+                segStartTime = currTime;
+                turnRate = 1000.0 * (double)segDegrees / (double)turnSegmentTime;
+                if (((turnRate > 10.0) && (desiredRotation - accumTurn) <= 3)  ||
+                        (turnRate > Math.abs(clockwise+5))){
+                    ratePowerAdjust = ratePowerAdjust - 0.05;
+                    upCount++;
+                }
+                else if (turnRate < Math.abs(clockwise)) {
+                    //ratePowerAdjust = ratePowerAdjust + 0.05;
+                    ratePowerAdjust = ratePowerAdjust + powerAdjustAmount;
+                    powerAdjustAmount = (powerAdjustAmount > 0.01) ? powerAdjustAmount - 0.01 : 0;
+                    downCount++;
+                }
+
+            }
+            double turnDir = (clockwise > 0) ? RIGHT_SIGN : LEFT_SIGN;
+            powerLevel = (powerLevel + ratePowerAdjust);
+            powerLevel = (powerLevel > 0.5)? 0.5 : powerLevel;  //Clamp upper power original .7
+            powerLevel = (powerLevel < 0.26)? 0.26 : powerLevel;  //Clamp lower power original .2
+            driveMove(0, turnDir * powerLevel);
+
+            currHeading = driveGyro.getHeading();
+            if (Math.abs(prevHeading - currHeading) > 350) {
+                if (prevHeading < currHeading) {
+                    accumTurn += prevHeading + 360 - currHeading;
+                }
+                else {
+                    accumTurn += currHeading + 360 - prevHeading;
+                }
+            }
+            else {
+                accumTurn += Math.abs(prevHeading - currHeading);
+            }
+            prevHeading = currHeading;
+
+        }
+
+        //Always command a stop before exiting
+        driveMove(0,0);
+
+
+        // Lets look at some of the results
+        myMode.telemetry.addData("Power LEvel ", "%f", powerLevel);
+        myMode.telemetry.addData("UpCount ", "%d", upCount);
+        myMode.telemetry.addData("DownCount ", "%d", downCount);
+    }
+
+
     public void gyroTurn3(int newHeading, int clockwise){
         int currHeading = driveGyro.getHeading();
         int accumTurn = 0;
