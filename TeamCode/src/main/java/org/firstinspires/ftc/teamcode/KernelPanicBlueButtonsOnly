@@ -1,0 +1,243 @@
+package org.firstinspires.ftc.teamcode;
+
+import android.os.SystemClock;
+
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.I2cAddr;
+
+
+
+/**
+ * Created by Kernel Panic on 11/26/16.
+ *
+ * DO NOT TOUCH
+ * DO NOT TOUCH
+ * DO NOT TOUCH
+ * DO NOT TOUCH
+ * DO NOT TOUCH
+ * DO NOT TOUCH
+ * DO NOT TOUCH
+ * DO NOT TOUCH
+ * DO NOT TOUCH
+ * DO NOT TOUCH
+ * DO NOT TOUCH
+ * DO NOT TOUCH
+ *
+ * Code is as good as it is going to get for first competition.   Leave it alone!!!!!
+ * This means you!!!
+ *
+ */
+@Autonomous(name="Kernel Panic Blue Buttons Only", group="Kernel Panic")
+public class KernelPanicBlueButtonsOnly extends LinearOpMode {
+    KernelPanicPlatform robot = new KernelPanicPlatform();
+    TwoArmButtonPusher twoArmButtonPusher = new TwoArmButtonPusher();
+
+    @Override
+    public void runOpMode() throws InterruptedException {
+        int[] Headings = {
+                44, 4, 4, 0, 0, 0   //215
+        };
+        int[] rotationDir = {
+                20, -30, 0, 0, 0, 0
+        };
+        int leg = 0;
+        int currentHeading;
+        int nextHeading;
+        //public static final int COLOR_SENSOR_BOTTOM_ADDRESS = 0x3c>>1;
+        //public ColorSensor colorBottom = null;
+        boolean continueForward = true;
+
+
+        robot.init(hardwareMap);
+
+
+        //Clean this up because of drive class
+        DcMotor[] leftMotors = new DcMotor[]{robot.leftMotorFront, robot.leftMotorBack};
+        DcMotor[] rightMotors = new DcMotor[]{robot.rightMotorFront, robot.rightMotorBack};
+        Drive myDrive = new Drive(leftMotors, rightMotors);
+
+        twoArmButtonPusher.setParams(robot.frontServo, robot.backServo, robot.colorSide,
+                robot.frontTouch, robot.backTouch, 2700,
+                robot.SERVO_EXTEND_POWER, robot.SERVO_RETRACT_POWER,
+                robot.SERVO_STOP_POWER, this);
+        myDrive.setParams(12.5, 2, 79.5, .25, .25, .25, 1, -1, robot.gyro, this);
+        waitForStart();
+
+        opModeIsActive();
+
+        // Move forward some
+        myDrive.moveForward(12, 0.3);
+        while ((myDrive.motorsRunning() == true) && opModeIsActive()) {
+            myDrive.update();
+        }
+        myDrive.allStop();
+
+        //Try to turn 45 degrees
+        myDrive.gyroTurn3B(Headings[0], rotationDir[0]);
+        myDrive.allStop();
+
+
+        myDrive.moveForward(48, 0.5);
+        while ((myDrive.motorsRunning() == true) && opModeIsActive()) {
+            myDrive.update();
+        }
+        myDrive.allStop();
+        safeSleep(200);
+
+        myDrive.moveForward(3, -0.5);
+        while ((myDrive.motorsRunning() == true) && opModeIsActive()) {
+            myDrive.update();
+        }
+
+        // THIS ALLOWS THE GYRO TO DEBOUNCE - LITERALLY - AFTER WALL CONTACT
+        myDrive.allStop();
+        safeSleep(1800);
+
+        //Turn back to original heading
+        myDrive.gyroTurn3B(Headings[1], rotationDir[1]);
+        myDrive.allStop();
+        telemetry.addData("Expected Heading1  ", "%d", Headings[1]);
+        telemetry.addData("Actual Heading1 ", robot.gyro.getHeading());
+        telemetry.update();
+
+
+        long mytime = System.currentTimeMillis();
+        long loopingtime = 0;
+        myDrive.driveMove(.2, 0);
+        boolean keepmoving = true;
+        while ((keepmoving == true) && opModeIsActive()) {
+            if (((robot.colorBottom.red() > 10) &&
+                    (robot.colorBottom.blue() > 10) &&
+                    (robot.colorBottom.green() > 10)) ||
+                    (loopingtime > 5000)) {
+                myDrive.allStop();
+                keepmoving = false;
+            }
+            loopingtime = System.currentTimeMillis() - mytime;
+        }
+        myDrive.allStop();
+
+        myDrive.moveForward(8, -0.20);  //8
+        while ((myDrive.motorsRunning() == true) && opModeIsActive()) {
+            myDrive.update();
+        }
+        myDrive.allStop();
+
+        //Wait a bit to make sure color saturates
+        safeSleep(500);
+        //Push blue buttons
+        twoArmButtonPusher.pushBlue();
+
+        myDrive.moveForward(20.1, 0.8);
+        while ((myDrive.motorsRunning() == true) && opModeIsActive()) {
+            myDrive.update();
+        }
+        myDrive.allStop();
+
+
+        mytime = System.currentTimeMillis();
+        loopingtime = 0;
+        myDrive.driveMove(.2, 0);
+        keepmoving = true;
+        while ((keepmoving == true) && opModeIsActive()) {
+            if (((robot.colorBottom.red() > 10) &&
+                    (robot.colorBottom.blue() > 10) &&
+                    (robot.colorBottom.green() > 10)) ||
+                    (loopingtime > 5000)) {
+                myDrive.allStop();
+                keepmoving = false;
+            }
+            loopingtime = System.currentTimeMillis() - mytime;
+        }
+        myDrive.allStop();
+
+        myDrive.moveForward(8, -0.2);
+        while ((myDrive.motorsRunning() == true) && opModeIsActive()) {
+            myDrive.update();
+        }
+        myDrive.allStop();
+
+        telemetry.addData("Expected Heading1  ", "%d", Headings[1]);
+        telemetry.addData("Actual Heading1 ", robot.gyro.getHeading());
+
+        telemetry.addData("Side      Red   ", "%d", robot.colorSide.red());
+        telemetry.addData("Side      Green ", "%d", robot.colorSide.green());
+        telemetry.addData("Side      Blue  ", "%d", robot.colorSide.blue());
+        safeSleep(500);
+        //Push blue buttons
+        twoArmButtonPusher.pushBlue();
+
+        //Turn towards center and drive to knock off ball
+        //myDrive.gyroTurn3B(Headings[2], rotationDir[2]);
+
+        myDrive.allStop();
+
+        //Drive towards ramp as fast as possible
+        myDrive.moveForward(63, -0.6);
+        while ((myDrive.motorsRunning() == true) && opModeIsActive()) {
+            myDrive.update();
+        }
+        myDrive.allStop();
+
+        //If time allows briefly pause and then bump the ball
+        //safeSleep(1000);
+        //myDrive.moveForward(4, -0.3);
+        //while ((myDrive.motorsRunning() == true) && opModeIsActive()) {
+        //    myDrive.update();
+        //}
+        //myDrive.allStop();
+
+
+        //Display diagnostic data
+        telemetry.update();
+
+        while(opModeIsActive()) {
+            idle();
+        }   // New opModeActive()
+
+        myDrive.allStop();
+        robot.frontServo.setPower(robot.SERVO_STOP_POWER);
+        robot.backServo.setPower(robot.SERVO_STOP_POWER);
+
+    }
+
+    public int newHeading (int currentHeading, int turnHeading) {
+        int tempHeading;
+
+        tempHeading = currentHeading + turnHeading;
+
+        if (tempHeading > 360)
+            tempHeading = tempHeading -360;
+
+        if (tempHeading < 0)
+            tempHeading = tempHeading + 360;
+
+        return (tempHeading);
+
+
+    }
+
+    public void dataDump() {
+        telemetry.addData("heading", robot.gyro.getHeading());
+        telemetry.addData("Side      Red   ", "%d", robot.colorSide.red());
+        telemetry.addData("Side      Green ", "%d", robot.colorSide.green());
+        telemetry.addData("Side      Blue  ", "%d", robot.colorSide.blue());
+        telemetry.addData("heading", robot.gyro.getHeading());
+        telemetry.update();
+    }
+
+    public void safeSleep (long duration) {
+        long currentTime = System.currentTimeMillis();
+        while ((System.currentTimeMillis() - duration < currentTime) && opModeIsActive()) {
+            //kill some time
+            // idle();
+        }
+    }
+
+
+
+}
